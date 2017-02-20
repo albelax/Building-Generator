@@ -1,0 +1,11 @@
+#version 410 core 
+
+void main()
+{
+	vec4 offset = vec4(0,0,0,0);
+	vec4 vertices[9] = vec4[9](	vec4(0.5,-0.5,0.5,1.0),vec4(-0.5,-0.5,0.5,1.0), vec4(-0.5,0.5,0.5,1.0),
+								vec4(-0.5,0.5,0.5,1.0), vec4(0.5,0.5,0.5,1.0), vec4(0.5,-0.5,0.5,1.0),
+								vec4(-0.5,0.5,0.5,1.0), vec4(-0.5,0.5,-0.5,1.0), vec4(0.5,0.5,0.5,1.0));
+	
+	gl_Position = vertices[gl_VertexID]+offset;
+}
