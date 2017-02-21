@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <SDL.h>
-//#include <GLFunctions.h>
 
 
 /// \class Window

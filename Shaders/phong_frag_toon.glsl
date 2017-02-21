@@ -1,4 +1,4 @@
-#version 430
+#version 410
 
 // This is passed on from the vertex shader
 in vec3 FragmentPosition;
