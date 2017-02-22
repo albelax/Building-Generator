@@ -18,6 +18,7 @@
 #include "Window.h"
 #include "Shader.h"
 #include "Buffer.h"
+#include "Building.h"
 #include <time.h>
 #include "Mesh.h"
 #include "glm.hpp"
@@ -25,7 +26,7 @@
 #include "gtc/type_ptr.hpp"
 #include "glm/ext.hpp"
 #include "glm/gtx/rotate_vector.hpp"
-#include <memory>
+#include <glm/gtc/type_ptr.hpp>
 
 int main()
 {
@@ -87,6 +88,8 @@ int main()
 	GLint MV_address = glGetUniformLocation(test.getShaderProgram(), "MV");
 	GLint N_address = glGetUniformLocation(test.getShaderProgram(), "N"); // inverse transpose of MV
 
+	Building building = Building();
+
 	glViewport(0,0,width, height);
 	SDL_Event event;
 	bool quit = false;
@@ -125,109 +128,30 @@ int main()
 		// attempt to make a trackball camera
 		if (mouse_down)
 		{
-				glm::mat4 Rot(glm::mat4(1.0f));
+				glm::mat4 CameraRotation(glm::mat4(1.0f));
+
 				float x_angle = (static_cast<float>(event.motion.x) - static_cast<float>(mouse_down_position_x));
 				float y_angle = (static_cast<float>(event.motion.y) - static_cast<float>(mouse_down_position_y));
+
+				if (abs(x_angle) > abs(y_angle))
+					CameraRotation = glm::rotate(CameraRotation, glm::radians(x_angle), glm::vec3(0.0f, 1.0f, 0.0f));
+				else if (abs(x_angle) < abs(y_angle))
+					CameraRotation = glm::rotate(CameraRotation, glm::radians(y_angle), glm::vec3(1.0f, 0.0f, 0.0f));
+				if (mouse_down_position_x != event.motion.x || mouse_down_position_y != event.motion.y)
+					view = view * CameraRotation;
 				mouse_down_position_x = event.motion.x;
 				mouse_down_position_y = event.motion.y;
-				Rot = glm::rotate(Rot, glm::radians(x_angle), glm::vec3(0.0f, 1.0f, 0.0f));
-				Rot = glm::rotate(Rot, glm::radians(y_angle), glm::vec3(1.0f, 0.0f, 0.0f));
-				view = view * Rot;
 		}
 
 		glClearColor(1.0f,1.0f,1.0f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Caluclate matrices of ship and draw
-		//MV_plane = glm::rotate(MV_plane, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-
-		MV_plane = glm::mat4(1.0f);
-		bool closing = false;
-		std::string building_string = "rurdruullldd";//"rruuldld";//"ruld";
-
-		for (int i = 0; i < building_string.length(); ++i)
+		for (int i = 0; i < building.getRule()->length(); i++)
 		{
-			if (building_string[i] == 'd') // Down
-			{
-				if (i > 0 && building_string[i-1] == 'd')
-				{
-					MV_plane = glm::translate(MV_plane, glm::vec3(0,0,1));
-				}
-				else if (i > 0 && building_string[i-1] == 'l')
-				{
-					MV_plane = glm::translate(MV_plane, glm::vec3(0.5,0,0.5));
-					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				}
-				else
-				{
-					MV_plane = glm::translate(MV_plane, glm::vec3(0.5,0,-0.5));
-					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				}
-				closing = true;
-			}
-			else if(building_string[i] == 'r') // Right
-			{
-				if (i > 0 && building_string[i-1] == 'r' )
-				{
-					MV_plane = glm::translate(MV_plane, glm::vec3(0,0,1));
-				}
-				else if(closing)
-				{
-					// in case the previous operation was l, it means the geometry is needs to rotate in the other direction
-					MV_plane = glm::translate(MV_plane, glm::vec3(0.5f,0,0.5f));
-					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				}
-				else if (i != 0)
-				{
-					MV_plane = glm::translate(MV_plane, glm::vec3(-0.5f,0,0.5f));
-					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				}
-			}
-			else if(building_string[i] == 'u') // UP
-			{
-				closing = false;
-				if (i > 0 && building_string[i-1] == 'u')
-				{
-					// in case it is continuing in the same path, don't rotate, just keep going
-					MV_plane = glm::translate(MV_plane, glm::vec3(0,0,1));
-				}
-				else if(closing)
-				{
-					// in case the previous operation was l, it means the geometry is needs to rotate in the other direction
-					MV_plane = glm::translate(MV_plane, glm::vec3(-0.5f,0,0.5f));
-					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				}
-				else
-				{
-					MV_plane = glm::translate(MV_plane, glm::vec3(0.5f,0,0.5f));
-					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				}
-
-			}
-			else if(building_string[i] == 'l') // Left
-			{
-				 // if the l operation is called it meand that the building is closing, some operations need to e inverted
-				if (i > 0 && building_string[i-1] == 'l')
-				{
-					MV_plane = glm::translate(MV_plane, glm::vec3(0,0,1));
-				}
-				else if (closing)
-				{
-					MV_plane = glm::translate(MV_plane, glm::vec3(-0.5f,0,0.5f));
-					MV_plane = glm::rotate(MV_plane, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				}
-				else
-				{
-					MV_plane = glm::translate(MV_plane, glm::vec3(0.5f,0,0.5f));
-					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				}
-			}
-
-			MVP = projection * view * MV_plane;
+			MVP = projection * view * (*building.getCurrentMV(i));
 			N = glm::mat3(glm::inverse(glm::transpose(MV_plane)));
 			glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
-			glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(MV_plane));
+			glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr((*building.getCurrentMV(i))));
 			glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
 			glDrawArrays(GL_TRIANGLES, plane.getBufferIndex()/3, (plane.getAmountVertexData()/3));
 		}
