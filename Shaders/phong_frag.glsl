@@ -3,7 +3,6 @@
 // This is passed on from the vertex shader
 in vec3 FragmentPosition;
 in vec3 FragmentNormal;
-
 // This is no longer a built-in variable
 layout (location=0) out vec4 FragColor;
 

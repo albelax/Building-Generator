@@ -14,6 +14,7 @@ layout (location=1) in vec2 TexCoord;
 // The vertex normal attribute
 layout (location=2) in vec3 VertexNormal;
 
+
 out vec3 FragmentPosition;
 out vec3 FragmentNormal;
 

@@ -36,7 +36,10 @@ int main()
 	int mouse_down_position_x;
 	int mouse_down_position_y;
 
-	Mesh plane("models/Plane.obj", "ship");
+	Mesh plane("models/L.obj", "ship");
+	Mesh D("models/D.obj", "ship");
+	Mesh U("models/U.obj", "ship");
+	Mesh R("models/R.obj", "ship");
 	Window mainWindow(width,height);
 
 #ifdef LINUX
@@ -55,9 +58,12 @@ int main()
 	glLinkProgram(test.getShaderProgram());
 	glUseProgram(test.getShaderProgram());
 
-	int bufferSize = plane.getAmountVertexData();
+	int bufferSize = plane.getAmountVertexData() + D.getAmountVertexData() + U.getAmountVertexData() + R.getAmountVertexData();
 	Buffer buffer(bufferSize, sizeof(float));
 	plane.setBufferIndex(buffer.append((void*) &plane.getVertexData(), plane.getAmountVertexData(), Buffer::VERTEX));
+	D.setBufferIndex(buffer.append((void*) &D.getVertexData(), D.getAmountVertexData(), Buffer::VERTEX));
+	R.setBufferIndex(buffer.append((void*) &R.getVertexData(), R.getAmountVertexData(), Buffer::VERTEX));
+	U.setBufferIndex(buffer.append((void*) &U.getVertexData(), U.getAmountVertexData(), Buffer::VERTEX));
 
 	// pass the vertex data to the shader
 	GLint pos = glGetAttribLocation(test.getShaderProgram(), "VertexPosition");
@@ -65,6 +71,9 @@ int main()
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	buffer.append((void*) &plane.getNormalsData(), plane.getAmountVertexData(), Buffer::NORMAL);
+	D.setBufferIndex(buffer.append((void*) &D.getNormalsData(), D.getAmountVertexData(), Buffer::NORMAL));
+	R.setBufferIndex(buffer.append((void*) &R.getNormalsData(), R.getAmountVertexData(), Buffer::NORMAL));
+	U.setBufferIndex(buffer.append((void*) &U.getNormalsData(), U.getAmountVertexData(), Buffer::NORMAL));
 
 	// pass the normals to the shader
 	GLint n = glGetAttribLocation(test.getShaderProgram(), "VertexNormal");
@@ -128,32 +137,41 @@ int main()
 		// attempt to make a trackball camera
 		if (mouse_down)
 		{
-				glm::mat4 CameraRotation(glm::mat4(1.0f));
+			glm::mat4 CameraRotation(glm::mat4(1.0f));
 
-				float x_angle = (static_cast<float>(event.motion.x) - static_cast<float>(mouse_down_position_x));
-				float y_angle = (static_cast<float>(event.motion.y) - static_cast<float>(mouse_down_position_y));
+			float x_angle = (static_cast<float>(event.motion.x) - static_cast<float>(mouse_down_position_x))*0.1;
+			float y_angle = (static_cast<float>(event.motion.y) - static_cast<float>(mouse_down_position_y))*0.1;
+			CameraRotation = glm::rotate(CameraRotation, glm::radians(-y_angle), glm::vec3(1.0f, 0.0f, 0.0f));
+			CameraRotation = glm::rotate(CameraRotation, glm::radians(x_angle), glm::vec3(0.0f, 1.0f, 0.0f));
+			CameraRotation = glm::rotate(CameraRotation, glm::radians(y_angle), glm::vec3(0.0f, 0.0f, 1.0f));
 
-				if (abs(x_angle) > abs(y_angle))
-					CameraRotation = glm::rotate(CameraRotation, glm::radians(x_angle), glm::vec3(0.0f, 1.0f, 0.0f));
-				else if (abs(x_angle) < abs(y_angle))
-					CameraRotation = glm::rotate(CameraRotation, glm::radians(y_angle), glm::vec3(1.0f, 0.0f, 0.0f));
-				if (mouse_down_position_x != event.motion.x || mouse_down_position_y != event.motion.y)
-					view = view * CameraRotation;
-				mouse_down_position_x = event.motion.x;
-				mouse_down_position_y = event.motion.y;
+			if (mouse_down_position_x != event.motion.x || mouse_down_position_y != event.motion.y)
+			{
+				view = view * CameraRotation;
+			}
+			mouse_down_position_x = event.motion.x;
+			mouse_down_position_y = event.motion.y;
 		}
 
 		glClearColor(1.0f,1.0f,1.0f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		for (int i = 0; i < building.getRule()->length(); i++)
+		for (size_t i = 0; i < building.getRule()->length(); i++)
 		{
-			MVP = projection * view * (*building.getCurrentMV(i));
+			MVP = projection * view * building.getWallsMVs()[i];
 			N = glm::mat3(glm::inverse(glm::transpose(MV_plane)));
 			glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
-			glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr((*building.getCurrentMV(i))));
+			glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(building.getWallsMVs()[i]));
 			glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
+			std::cout << "i: " << building.getRule()->at(i) << '\n';
+			//if (building.getRule()->at(i)  =='l')
 			glDrawArrays(GL_TRIANGLES, plane.getBufferIndex()/3, (plane.getAmountVertexData()/3));
+//			if (building.getRule()->at(i) == 'r')
+//				glDrawArrays(GL_TRIANGLES, R.getBufferIndex()/3, (R.getAmountVertexData()/3));
+//			if (building.getRule()->at(i) == 'd')
+//				glDrawArrays(GL_TRIANGLES, D.getBufferIndex()/3, (D.getAmountVertexData()/3));
+//			if (building.getRule()->at(i) == 'u')
+//				glDrawArrays(GL_TRIANGLES, U.getBufferIndex()/3, (U.getAmountVertexData()/3));
 		}
 		SDL_GL_SwapWindow(mainWindow.getWindow());
 	}

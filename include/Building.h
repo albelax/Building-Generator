@@ -8,21 +8,24 @@
 #include "glm/ext.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include <vector>
+
 class Building
 {
-
-private:
-	std::string m_rule;
-	/// m_MV used to move the
-	glm::mat4 m_MV;
-	glm::mat4 m_walls_MV; // used just to draw the walls
-	Mesh * m_wall;
-	void generateBase();
 public:
 	Building();
 	void draw();
-	const std::string * const getRule() {return &m_rule;}
-	glm::mat4 *getCurrentMV(int _index);
+	const std::string * getRule() {return &m_rule;}
+	const std::vector<glm::mat4> & getWallsMVs() {return m_walls_MVs;}
+private:
+	/// rule that determines the shape of the base
+	std::string m_rule;
+	/// m_MV used to move the base
+	glm::mat4 m_MV;
+	Mesh * m_wall;
+	std::vector<glm::mat4> m_walls_MVs;
+	void generateBase();
+	void generateMVs();
 };
 
 #endif // BUILDING_H
