@@ -32,9 +32,10 @@ int main()
 	int width = 800;
 	int height = 600;
 	bool mouse_down;
-	int mouse_down_position;
+	int mouse_down_position_x;
+	int mouse_down_position_y;
 
-	Mesh plane("models/plane.obj", "ship");
+	Mesh plane("models/Plane.obj", "ship");
 	Window mainWindow(width,height);
 
 #ifdef LINUX
@@ -71,12 +72,9 @@ int main()
 
 	// transformation of the mesh
 	glm::mat4 MV_plane = glm::mat4(1.0);
-	//MV_plane = glm::translate(MV_plane, glm::vec3(0.0f, 0.0f, -2.0f));
-	//MV_plane = glm::rotate(MV_plane, glm::radians(45.0f),glm::vec3(0,1,0));
-	//std::cout << glm::to_string(MV_plane) << '\n';
 
 	// virtual camera
-	glm::vec3 eye(3.0, 3.0f, 3.0f);
+	glm::vec3 eye(0, 3.0f, 3.0f);
 	glm::mat4 view = glm::lookAt(eye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glm::mat4 projection = glm::perspective(glm::radians(60.0f),
@@ -114,7 +112,8 @@ int main()
 			{
 				//std::cout << "DOWN " << event.button.x << '\n';
 				mouse_down = true;
-				mouse_down_position = event.button.x;
+				mouse_down_position_x = event.button.x;
+				mouse_down_position_y = event.button.y;
 			}
 			if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT )
 			{
@@ -126,11 +125,14 @@ int main()
 		// attempt to make a trackball camera
 		if (mouse_down)
 		{
-				float angle = (static_cast<float>(event.motion.x) - static_cast<float>(mouse_down_position))/10;
-				mouse_down_position = event.motion.x;
-				//eye = glm::rotate(eye, glm::radians(-angle), glm::vec3(0.0f, 1.0f, 0.0f));
-				//view = glm::lookAt(eye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				//std::cout << angle << '\n';
+				glm::mat4 Rot(glm::mat4(1.0f));
+				float x_angle = (static_cast<float>(event.motion.x) - static_cast<float>(mouse_down_position_x));
+				float y_angle = (static_cast<float>(event.motion.y) - static_cast<float>(mouse_down_position_y));
+				mouse_down_position_x = event.motion.x;
+				mouse_down_position_y = event.motion.y;
+				Rot = glm::rotate(Rot, glm::radians(x_angle), glm::vec3(0.0f, 1.0f, 0.0f));
+				Rot = glm::rotate(Rot, glm::radians(y_angle), glm::vec3(1.0f, 0.0f, 0.0f));
+				view = view * Rot;
 		}
 
 		glClearColor(1.0f,1.0f,1.0f,1.0f);
