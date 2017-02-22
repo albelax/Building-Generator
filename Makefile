@@ -49,12 +49,14 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = src/Buffer.cpp \
+		src/building.cpp \
 		src/main.cpp \
 		src/Mesh.cpp \
 		src/Shader.cpp \
 		src/UtilityFunctions.cpp \
 		src/Window.cpp 
 OBJECTS       = Buffer.o \
+		building.o \
 		main.o \
 		Mesh.o \
 		Shader.o \
@@ -232,6 +234,7 @@ DIST          = ../Qt/5.8/clang_64/mkspecs/features/spec_pre.prf \
 		../Qt/5.8/clang_64/mkspecs/features/yacc.prf \
 		../Qt/5.8/clang_64/mkspecs/features/lex.prf \
 		BuildingGenerator.pro include/* src/Buffer.cpp \
+		src/building.cpp \
 		src/main.cpp \
 		src/Mesh.cpp \
 		src/Shader.cpp \
@@ -641,6 +644,9 @@ compiler_clean:
 Buffer.o: src/Buffer.cpp include/Buffer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Buffer.o src/Buffer.cpp
 
+building.o: src/building.cpp include/building.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o building.o src/building.cpp
+
 main.o: src/main.cpp /usr/local/include/SDL2/SDL.h \
 		/usr/local/include/SDL2/SDL_main.h \
 		/usr/local/include/SDL2/SDL_stdinc.h \
@@ -688,6 +694,7 @@ main.o: src/main.cpp /usr/local/include/SDL2/SDL.h \
 		include/Shader.h \
 		/usr/local/include/SDL2/SDL_opengl.h \
 		/usr/local/include/SDL2/SDL_opengl_glext.h \
+		include/Buffer.h \
 		include/Mesh.h \
 		include/UtilityFunctions.h \
 		glm/glm.hpp \

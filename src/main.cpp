@@ -71,9 +71,12 @@ int main()
 
 	// transformation of the mesh
 	glm::mat4 MV_plane = glm::mat4(1.0);
-	MV_plane = glm::translate(MV_plane, glm::vec3(0.0f, 0.0f, -2.0f));
+	//MV_plane = glm::translate(MV_plane, glm::vec3(0.0f, 0.0f, -2.0f));
+	//MV_plane = glm::rotate(MV_plane, glm::radians(45.0f),glm::vec3(0,1,0));
+	//std::cout << glm::to_string(MV_plane) << '\n';
+
 	// virtual camera
-	glm::vec3 eye(0.0f, 0.0f, 1.0f);
+	glm::vec3 eye(3.0, 3.0f, 3.0f);
 	glm::mat4 view = glm::lookAt(eye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glm::mat4 projection = glm::perspective(glm::radians(60.0f),
@@ -85,7 +88,6 @@ int main()
 	GLint MVP_address = glGetUniformLocation(test.getShaderProgram(), "MVP");
 	GLint MV_address = glGetUniformLocation(test.getShaderProgram(), "MV");
 	GLint N_address = glGetUniformLocation(test.getShaderProgram(), "N"); // inverse transpose of MV
-
 
 	glViewport(0,0,width, height);
 	SDL_Event event;
@@ -135,14 +137,98 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Caluclate matrices of ship and draw
-		MV_plane = glm::rotate(MV_plane, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		MVP = projection * view * MV_plane;
-		N = glm::mat3(glm::inverse(glm::transpose(MV_plane)));
-		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(MV_plane));
-		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
-		glDrawArrays(GL_TRIANGLES, plane.getBufferIndex()/3, (plane.getAmountVertexData()/3));
+		//MV_plane = glm::rotate(MV_plane, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
+
+		MV_plane = glm::mat4(1.0f);
+		bool closing = false;
+		std::string building_string = "rurdruullldd";//"rruuldld";//"ruld";
+
+		for (int i = 0; i < building_string.length(); ++i)
+		{
+			if (building_string[i] == 'd') // Down
+			{
+				if (i > 0 && building_string[i-1] == 'd')
+				{
+					MV_plane = glm::translate(MV_plane, glm::vec3(0,0,1));
+				}
+				else if (i > 0 && building_string[i-1] == 'l')
+				{
+					MV_plane = glm::translate(MV_plane, glm::vec3(0.5,0,0.5));
+					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				}
+				else
+				{
+					MV_plane = glm::translate(MV_plane, glm::vec3(0.5,0,-0.5));
+					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				}
+				closing = true;
+			}
+			else if(building_string[i] == 'r') // Right
+			{
+				if (i > 0 && building_string[i-1] == 'r' )
+				{
+					MV_plane = glm::translate(MV_plane, glm::vec3(0,0,1));
+				}
+				else if(closing)
+				{
+					// in case the previous operation was l, it means the geometry is needs to rotate in the other direction
+					MV_plane = glm::translate(MV_plane, glm::vec3(0.5f,0,0.5f));
+					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				}
+				else if (i != 0)
+				{
+					MV_plane = glm::translate(MV_plane, glm::vec3(-0.5f,0,0.5f));
+					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				}
+			}
+			else if(building_string[i] == 'u') // UP
+			{
+				closing = false;
+				if (i > 0 && building_string[i-1] == 'u')
+				{
+					// in case it is continuing in the same path, don't rotate, just keep going
+					MV_plane = glm::translate(MV_plane, glm::vec3(0,0,1));
+				}
+				else if(closing)
+				{
+					// in case the previous operation was l, it means the geometry is needs to rotate in the other direction
+					MV_plane = glm::translate(MV_plane, glm::vec3(-0.5f,0,0.5f));
+					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				}
+				else
+				{
+					MV_plane = glm::translate(MV_plane, glm::vec3(0.5f,0,0.5f));
+					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				}
+
+			}
+			else if(building_string[i] == 'l') // Left
+			{
+				 // if the l operation is called it meand that the building is closing, some operations need to e inverted
+				if (i > 0 && building_string[i-1] == 'l')
+				{
+					MV_plane = glm::translate(MV_plane, glm::vec3(0,0,1));
+				}
+				else if (closing)
+				{
+					MV_plane = glm::translate(MV_plane, glm::vec3(-0.5f,0,0.5f));
+					MV_plane = glm::rotate(MV_plane, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				}
+				else
+				{
+					MV_plane = glm::translate(MV_plane, glm::vec3(0.5f,0,0.5f));
+					MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				}
+			}
+
+			MVP = projection * view * MV_plane;
+			N = glm::mat3(glm::inverse(glm::transpose(MV_plane)));
+			glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
+			glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(MV_plane));
+			glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
+			glDrawArrays(GL_TRIANGLES, plane.getBufferIndex()/3, (plane.getAmountVertexData()/3));
+		}
 		SDL_GL_SwapWindow(mainWindow.getWindow());
 	}
 	glDeleteProgram(test.getShaderProgram());
