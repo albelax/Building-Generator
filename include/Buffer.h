@@ -13,6 +13,7 @@
 class Buffer
 {
 public:
+	enum class operation {r = 'r', u = 'u', l = 'l', d = 'd'};
 	enum BufferType { VERTEX, NORMAL, UV };
 	Buffer() = delete; // makes sure that the compiler doesn't generate a default constructor
 	Buffer(const int _size, int _sizeOfData);

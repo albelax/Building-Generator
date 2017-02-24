@@ -15,18 +15,20 @@
 
 #include <iostream>
 #include <SDL.h>
-#include "Window.h"
-#include "Shader.h"
-#include "Buffer.h"
-#include "Building.h"
-#include <time.h>
-#include "Mesh.h"
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
 #include "glm/ext.hpp"
 #include "glm/gtx/rotate_vector.hpp"
-#include <glm/gtc/type_ptr.hpp>
+#include "glm/gtc/type_ptr.hpp"
+
+#include "Window.h"
+#include "Shader.h"
+#include "Buffer.h"
+#include "Building.h"
+#include "Rule.h"
+#include "Mesh.h"
+
 
 int main()
 {
@@ -135,30 +137,30 @@ int main()
 		}
 
 		// attempt to make a trackball camera
-//		if (mouse_down)
-//		{
+		if (mouse_down)
+		{
 			glm::mat4 CameraRotation(glm::mat4(1.0f));
 
-//			float x_angle = (static_cast<float>(event.motion.x) - static_cast<float>(mouse_down_position_x))*0.1;
-//			float y_angle = (static_cast<float>(event.motion.y) - static_cast<float>(mouse_down_position_y))*0.1;
-			//CameraRotation = glm::rotate(CameraRotation, glm::radians(-y_angle), glm::vec3(1.0f, 0.0f, 0.0f));
-			CameraRotation = glm::rotate(CameraRotation, glm::radians(0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+			float x_angle = (static_cast<float>(event.motion.x) - static_cast<float>(mouse_down_position_x))*0.1;
+			//float y_angle = (static_cast<float>(event.motion.y) - static_cast<float>(mouse_down_position_y))*0.1;
+//			CameraRotation = glm::rotate(CameraRotation, glm::radians(-y_angle), glm::vec3(1.0f, 0.0f, 0.0f));
+			CameraRotation = glm::rotate(CameraRotation, glm::radians(x_angle), glm::vec3(0.0f, 1.0f, 0.0f));
 			//CameraRotation = glm::rotate(CameraRotation, glm::radians(y_angle), glm::vec3(0.0f, 0.0f, 1.0f));
 
-//			if (mouse_down_position_x != event.motion.x || mouse_down_position_y != event.motion.y)
-//			{
-			  view = view * CameraRotation;
-//			}
-//			mouse_down_position_x = event.motion.x;
-//			mouse_down_position_y = event.motion.y;
-		//}
+			if (mouse_down_position_x != event.motion.x || mouse_down_position_y != event.motion.y)
+			{
+					view = view * CameraRotation;
+			}
+			mouse_down_position_x = event.motion.x;
+			mouse_down_position_y = event.motion.y;
+		}
 
 		glClearColor(1.0f,1.0f,1.0f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (size_t i = 0; i < building.getRule()->length(); i++)
 		{
-			MV_plane = building.getWallsMVs()[i] * building.getMV();
+			MV_plane = building.getWallsMVs()[i];
 			MVP = projection * view * MV_plane;
 			N = glm::mat3(glm::inverse(glm::transpose(MV_plane)));
 			glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));

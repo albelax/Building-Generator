@@ -34,8 +34,6 @@ public:
 	int getAmountVertexData() const { return static_cast<int>(m_vertices.size()); }
 	int getBufferIndex() const { return m_bufferIndex; }
 	std::string name() const { return m_name; }
-
-
 };
 
 #endif // MESH_H
