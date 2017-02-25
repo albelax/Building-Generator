@@ -12,18 +12,13 @@
 #ifdef linux
 #include <GL/glew.h>
 #endif
-
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
 #endif
 
-//#else
-//#include <GL/glew.h>
-//#endif
 
 #include <string>
 #include <fstream>
-#include "SDL_opengl.h"
 
 class Shader
 {

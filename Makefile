@@ -50,6 +50,7 @@ OBJECTS_DIR   = ./
 
 SOURCES       = src/Buffer.cpp \
 		src/Building.cpp \
+		src/Corner.cpp \
 		src/main.cpp \
 		src/Mesh.cpp \
 		src/Shader.cpp \
@@ -57,6 +58,7 @@ SOURCES       = src/Buffer.cpp \
 		src/Window.cpp 
 OBJECTS       = Buffer.o \
 		Building.o \
+		Corner.o \
 		main.o \
 		Mesh.o \
 		Shader.o \
@@ -235,6 +237,7 @@ DIST          = ../Qt/5.8/clang_64/mkspecs/features/spec_pre.prf \
 		../Qt/5.8/clang_64/mkspecs/features/lex.prf \
 		BuildingGenerator.pro include/* src/Buffer.cpp \
 		src/Building.cpp \
+		src/Corner.cpp \
 		src/main.cpp \
 		src/Mesh.cpp \
 		src/Shader.cpp \
@@ -873,6 +876,9 @@ Building.o: src/Building.cpp include/Building.h \
 		glm/gtx/range.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Building.o src/Building.cpp
 
+Corner.o: src/Corner.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Corner.o src/Corner.cpp
+
 main.o: src/main.cpp /usr/local/include/SDL2/SDL.h \
 		/usr/local/include/SDL2/SDL_main.h \
 		/usr/local/include/SDL2/SDL_stdinc.h \
@@ -916,14 +922,6 @@ main.o: src/main.cpp /usr/local/include/SDL2/SDL.h \
 		/usr/local/include/SDL2/SDL_system.h \
 		/usr/local/include/SDL2/SDL_timer.h \
 		/usr/local/include/SDL2/SDL_version.h \
-		include/Window.h \
-		include/Shader.h \
-		/usr/local/include/SDL2/SDL_opengl.h \
-		/usr/local/include/SDL2/SDL_opengl_glext.h \
-		include/Buffer.h \
-		include/Building.h \
-		include/Mesh.h \
-		include/UtilityFunctions.h \
 		glm/glm.hpp \
 		glm/detail/_fixes.hpp \
 		glm/fwd.hpp \
@@ -1147,7 +1145,15 @@ main.o: src/main.cpp /usr/local/include/SDL2/SDL.h \
 		glm/gtx/wrap.hpp \
 		glm/gtx/wrap.inl \
 		glm/gtx/scalar_multiplication.hpp \
-		glm/gtx/range.hpp
+		glm/gtx/range.hpp \
+		include/Window.h \
+		include/Shader.h \
+		/usr/local/include/SDL2/SDL_opengl.h \
+		/usr/local/include/SDL2/SDL_opengl_glext.h \
+		include/Buffer.h \
+		include/Building.h \
+		include/Mesh.h \
+		include/UtilityFunctions.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
 Mesh.o: src/Mesh.cpp include/Mesh.h \

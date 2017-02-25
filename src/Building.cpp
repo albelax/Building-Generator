@@ -2,7 +2,7 @@
 
 Building::Building()
 {
-	m_padding = 0.5f;
+	m_padding = 1.001f; // 0.8f;
 	generateBase();
 	m_walls_MVs.resize(m_rule.length());
 	makeRotationTable();
@@ -15,9 +15,11 @@ void Building::generateBase()
 	// for now I just have a few rules,
 	// maybe at some point I will actually generate them randomly
 	m_rule = "ruld";
-	m_rule = "rruuldld";
+	m_rule = "ruulldldrr";
 	m_rule = "rurdruullldd";
 	m_rule = "rurdruuuldlulddd";
+//	m_rule = "rurdruullldd";
+
 }
 
 void Building::makeRotationTable()
@@ -65,30 +67,25 @@ void Building::generateMVs()
 		switch(m_rule[i])
 		{
 			case 'r': column = 0; break;
-
 			case 'u': column = 1; break;
-
 			case 'l': column = 2; break;
-
 			case 'd': column = 3; break;
 		}
 		switch (m_rule[i-1])
 		{
 			case 'r': row = 0; break;
-
 			case 'u': row = 1; break;
-
 			case 'l': row = 2; break;
-
 			case 'd': row = 3; break;
 		}
 		// if the column is the same as the
-		float z = m_translationTable[column][row] == 1 ? 1 : m_padding;
+		float z = m_translationTable[column][row] == 1 ? m_padding*2 : m_padding;
 		float x = m_translationTable[column][row] == 1 ? 0 : m_translationTable[column][row];
 		wall_MV = glm::translate(wall_MV, glm::vec3(x, 0, z));
 		totX = std::max(totX, wall_MV[3][0]);
 		totZ = std::max(totZ, wall_MV[3][2]);
 		wall_MV = glm::rotate(wall_MV, glm::radians(static_cast<float>(m_rotationTable[column][row])), glm::vec3(0,1.0f,0));
+
 		m_walls_MVs[i] = wall_MV;
 	}
 

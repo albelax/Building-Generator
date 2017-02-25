@@ -32,7 +32,7 @@ Shader::Shader(std::string _name, std::string _vertex, std::string _fragment)
 	switch(status)
 	{
 		case(0): std::cout << "vertex shader did not compile" <<'\n'; break;
-		case(1): std::cout << "vertex shader compiled" <<'\n'; break;
+		//case(1): std::cout << "vertex shader compiled" <<'\n'; break;
 	}
 
 	// creation of the fragment shader
@@ -48,7 +48,7 @@ Shader::Shader(std::string _name, std::string _vertex, std::string _fragment)
 	switch(status)
 	{
 		case(0): std::cout << "fragment shader did not compile" <<'\n'; break;
-		case(1): std::cout << "fragment shader compiled" <<'\n'; break;
+		//case(1): std::cout << "fragment shader compiled" <<'\n'; break;
 	}
 
 	GLchar buffer[500];

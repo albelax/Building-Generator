@@ -10,10 +10,6 @@
 #include <GL/glew.h>
 #endif
 
-//#else
-//#include <GL/glew.h>
-//#endif
-
 #include <string>
 #include <vector>
 #include <array>
@@ -21,7 +17,6 @@
 #include <iostream>
 #include <fstream>
 #include <random>
-//#include "GLFunctions.h"
 
 /// \class UtilityFunctions
 /// \brief is a bundle of functions that helped me in the developement process

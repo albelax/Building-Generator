@@ -33,12 +33,12 @@ int Buffer::append(void *_address, int size, BufferType _type)
 			glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
 			m_elements.push_back(m_vertex_index);
 			currentIndex = &m_vertex_index;
-			std::cout <<"vertex " << *currentIndex <<" "<< size << '\n';
+			//std::cout <<"vertex " << *currentIndex <<" "<< size << '\n';
 			break;
 		case(NORMAL):
 			glBindBuffer(GL_ARRAY_BUFFER, m_normalBuffer);
 			currentIndex = &m_normal_index;
-			std::cout <<"normals " << *currentIndex <<" "<< size << '\n';
+			//std::cout <<"normals " << *currentIndex <<" "<< size << '\n';
 			break;
 		case(UV):
 			glBindBuffer(GL_ARRAY_BUFFER, m_uvBuffer);
