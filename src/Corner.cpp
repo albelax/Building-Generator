@@ -40,6 +40,17 @@ Corner::Corner(Building &_base)
 		}
 	}
 	m_corners_MVs.resize(std::distance(m_corners_MVs.begin(), it));
+	for (auto i : m_corners_MVs)
+	{
+		glm::vec3 scale(1.0f);
+		glm::quat rotation;
+		glm::vec3 translation(1.0f);
+		glm::vec3 skew(1.0f);
+		glm::vec4 perspective(1.0f);
+		glm::mat4 p = i;
+		glm::decompose(p,scale,rotation,translation,skew,perspective);
+		std::cout << glm::to_string(translation) << '\n';
+	}
 }
 
 void Corner::makeRotationTable()

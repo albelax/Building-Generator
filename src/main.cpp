@@ -37,9 +37,6 @@ int main()
 {
 	int width = 800;
 	int height = 600;
-	int mouse_down_position_x;
-	int mouse_down_position_y;
-	bool mouse_down;
 
 	Mesh plane("models/Walls/L.obj", "wall");
 //	Mesh plane("models/Walls/Plane.obj", "wall");
@@ -96,10 +93,6 @@ int main()
 	glEnableVertexAttribArray(n);
 	glVertexAttribPointer(n, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	// virtual camera
-	glm::vec3 eye(0, 2.0f, -5.0f);
-	glm::mat4 view = glm::lookAt(eye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
 	glm::mat4 projection = glm::perspective(glm::radians(60.0f),
 	static_cast<float>(mainWindow.getWidth())/static_cast<float>(mainWindow.getHeight()), 0.1f, 100.0f);
 
@@ -109,6 +102,12 @@ int main()
 	GLint MVP_address = glGetUniformLocation(test.getShaderProgram(), "MVP");
 	GLint MV_address = glGetUniformLocation(test.getShaderProgram(), "MV");
 	GLint N_address = glGetUniformLocation(test.getShaderProgram(), "N"); // inverse transpose of MV
+
+	TrackballCamera mainCamera = TrackballCamera();
+	mainCamera.setInitialMousePos(0,0);
+	// Needed for the fixed camera
+	mainCamera.setTarget(0.0f,0.0f,0.0f);
+	mainCamera.setEye(0.0f, 2.0f, -5.0f);
 
 	Building building = Building();
 	Corner corners = Corner(building);
@@ -123,8 +122,9 @@ int main()
 
 		while (SDL_PollEvent(&event))
 		{
-	if (event.type == SDL_QUIT)// || event.key.keysym.sym == SDLK_ESCAPE)
+			if (event.type == SDL_QUIT)// || event.key.keysym.sym == SDLK_ESCAPE)
 				quit = true;
+
 			if (event.type == SDL_WINDOWEVENT)
 			{
 				SDL_GetWindowSize(mainWindow.getWindow(), &width, &height);
@@ -135,55 +135,19 @@ int main()
 				static_cast<float>(mainWindow.getWidth())/static_cast<float>(mainWindow.getHeight()),
 				0.1f, 100.0f);
 			}
-			if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT )
-			{
-				mouse_down = true;
-				mouse_down_position_x = event.button.x;
-				mouse_down_position_y = event.button.y;
-			}
-			if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT )
-			{
-				mouse_down = false;
-			}
+
+			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
+				mainCamera.handleMouseClick(event.button.x, event.button.y, event.button.button, event.type, 0);
+			mainCamera.handleMouseMove(event.button.x, event.button.y);
 		}
 
-
-		// attempt to make a trackball camera
-	if (mouse_down && TRACKBALL)
-	{
-	glm::mat4 CameraRotation(glm::mat4(1.0f));
-
-	float x_angle = (static_cast<float>(event.motion.x) - static_cast<float>(mouse_down_position_x))*0.1;
-
-	//x_angle = x_angle > 1.0f ? 1.0f : x_angle;
-	//x_angle = x_angle < -1.0f ? -1.0f : x_angle;
-
-	//float y_angle = (static_cast<float>(event.motion.y) - static_cast<float>(mouse_down_position_y))*0.1;
-	CameraRotation = glm::rotate(CameraRotation, glm::radians(x_angle), glm::vec3(0.0f, 1.0f, 0.0f));
-	//CameraRotation = glm::rotate(CameraRotation, glm::radians(y_angle), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	if (mouse_down_position_x != event.motion.x || mouse_down_position_y != event.motion.y)
-	{
-	//std::cout << x_angle << '\n';
-	view = view * CameraRotation;
-}
-	mouse_down_position_x = event.motion.x;
-	mouse_down_position_y = event.motion.y;
-}
-	else if(!TRACKBALL)
-	{
-	float x_angle = 0.5f;
-	glm::mat4 CameraRotation(glm::mat4(1.0f));
-	CameraRotation = glm::rotate(CameraRotation, glm::radians(x_angle), glm::vec3(0.0f, 1.0f, 0.0f));
-	view = view * CameraRotation;
-}
-
+		mainCamera.update();
 		glClearColor(1.0f,1.0f,1.0f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	for (size_t i = 0; i < building.getWallsMVs().size(); i++)
 	{
-		MVP = projection * view * building.getWallsMVs()[i];
+		MVP = projection * mainCamera.viewMatrix() * building.getWallsMVs()[i];
 		N = glm::mat3(glm::inverse(glm::transpose(building.getWallsMVs()[i])));
 		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(building.getWallsMVs()[i]));
@@ -194,7 +158,7 @@ int main()
 	if (corners.getCornersMVs().size() > 0)
 	for (size_t i = 0; i < corners.getCornersMVs().size(); ++i)
 	{
-		MVP = projection * view * corners.getCornersMVs()[i];
+		MVP = projection * mainCamera.viewMatrix() * corners.getCornersMVs()[i];
 		N = glm::mat3(glm::inverse(glm::transpose(corners.getCornersMVs()[i])));
 		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(corners.getCornersMVs()[i]));

@@ -33,6 +33,7 @@ TrackballCamera::TrackballCamera() :
  */
 void TrackballCamera::handleMouseClick(double mouseX, double mouseY, int button, int action, int mods)
 {
+	//
     switch(m_state)
     {
     case TRACKBALL_PASSIVE:
