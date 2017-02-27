@@ -2,7 +2,7 @@
 
 Building::Building()
 {
-	m_padding = 1.001f; // 0.8f;
+	m_padding = 1.0000001;//1.001f;  //0.8f;
 	generateBase();
 	m_walls_MVs.resize(m_rule.length());
 	makeRotationTable();
@@ -15,10 +15,11 @@ void Building::generateBase()
 	// for now I just have a few rules,
 	// maybe at some point I will actually generate them randomly
 	m_rule = "ruld";
-	m_rule = "ruulldldrr";
-	m_rule = "rurdruullldd";
-	m_rule = "rurdruuuldlulddd";
-//	m_rule = "rurdruullldd";
+	m_rule = "rrrruuulldld";
+//	m_rule = "rurdruullldd"; //
+	m_rule = "rurdruuuldlulddsd";
+	m_rule = "rrrurruuuuldlluldddddd";
+//	m_rule = "rurdruuulllllddd";
 
 }
 
@@ -79,7 +80,7 @@ void Building::generateMVs()
 			case 'd': row = 3; break;
 		}
 		// if the column is the same as the
-		float z = m_translationTable[column][row] == 1 ? m_padding*2 : m_padding;
+		float z = /*m_translationTable[column][row] == 1 ? m_padding:*/ m_padding;
 		float x = m_translationTable[column][row] == 1 ? 0 : m_translationTable[column][row];
 		wall_MV = glm::translate(wall_MV, glm::vec3(x, 0, z));
 		totX = std::max(totX, wall_MV[3][0]);

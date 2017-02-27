@@ -31,9 +31,10 @@ Corner::Corner(Building &_base)
 			glm::mat4 tmp(1.0f);
 			// in case the angle is concave use the first one else the other one, you may want to use different meshes
 			if (m_translationTable[column][row] == 0)
-				tmp = glm::translate(_base.getWallsMVs()[i], glm::vec3(0.15f,0,0.6495f));
+				tmp = glm::translate(_base.getWallsMVs()[i], glm::vec3(0.256f,0,0.745f));
 			else if (m_translationTable[column][row] == 1)
-				tmp = glm::translate(_base.getWallsMVs()[i], glm::vec3(-0.150f,0,0.6495f));
+				tmp = glm::translate(_base.getWallsMVs()[i], glm::vec3(-0.256,0,0.745f));
+
 			(*it) = glm::rotate(tmp, glm::radians(m_rotationTable[column][row]), glm::vec3(0.0f, 0.1f, 0.0f));
 			it++;
 		}
@@ -57,6 +58,7 @@ void Corner::makeRotationTable()
 void Corner::makeTranslationTable()
 {
 	// 0 if standard everythong else is an exception
+	// 1 if it's concave 0 if convex... I think
 	m_translationTable =
 	{
 	{0.0f, 0.0f, 0.0f, 1.0f},	// r

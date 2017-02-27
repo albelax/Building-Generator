@@ -42,8 +42,8 @@ int main()
 
 	Mesh plane("models/Walls/L.obj", "wall");
 //	Mesh plane("models/Walls/Plane.obj", "wall");
-	//Mesh corner("models/Corners/Sharp_Corner_oriented.obj", "corner");
-	Mesh corner("models/Corners/oriented_cut_corner.obj", "corner");
+	Mesh corner("models/Corners/b_Sharp_Corner_oriented.obj", "corner");
+//	Mesh corner("models/Corners/b_oriented_cut_corner.obj", "corner");
 	Mesh ship("models/ship2.obj", "ship");
 	std::vector<Mesh*> meshes;
 	meshes.resize(3);
@@ -97,9 +97,6 @@ int main()
 	glEnableVertexAttribArray(n);
 	glVertexAttribPointer(n, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	// transformation of the mesh
-	glm::mat4 MV_plane = glm::mat4(1.0);
-
 	// virtual camera
 	glm::vec3 eye(0, 2.0f, -5.0f);
 	glm::mat4 view = glm::lookAt(eye, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -119,12 +116,6 @@ int main()
 	glViewport(0,0,width, height);
 	SDL_Event event;
 	bool quit = false;
-
-//	MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0,1,0));
-//	MV_plane = glm::translate(MV_plane, glm::vec3(-0.1f,0,-0.8f));
-
-	//MV_plane = glm::translate(MV_plane, glm::vec3(-0.5,0,-1.2f));
-	//MV_plane = glm::rotate(MV_plane, glm::radians(90.0f), glm::vec3(0,1,0));
 
 	// main loop
 	while (quit != true)
@@ -191,7 +182,7 @@ int main()
 		glClearColor(1.0f,1.0f,1.0f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (size_t i = 0; i < building.getRule()->length(); i++)
+	for (size_t i = 0; i < building.getWallsMVs().size(); i++)
 	{
 		MVP = projection * view * building.getWallsMVs()[i];
 		N = glm::mat3(glm::inverse(glm::transpose(building.getWallsMVs()[i])));
