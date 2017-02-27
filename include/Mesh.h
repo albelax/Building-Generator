@@ -14,6 +14,10 @@
 /// \class Mesh
 /// \brief contains the data imported from a .OBJ file
 
+///
+/// this class was made for the second PPP assignment
+///
+
 class Mesh
 {
 private:

@@ -29,6 +29,7 @@
 #include "Building.h"
 #include "Mesh.h"
 #include "Corner.h"
+#include "TrackballCamera.h"
 
 #define TRACKBALL 1
 
@@ -36,20 +37,18 @@ int main()
 {
 	int width = 800;
 	int height = 600;
-	bool mouse_down;
 	int mouse_down_position_x;
 	int mouse_down_position_y;
+	bool mouse_down;
 
 	Mesh plane("models/Walls/L.obj", "wall");
 //	Mesh plane("models/Walls/Plane.obj", "wall");
-	Mesh corner("models/Corners/b_Sharp_Corner_oriented.obj", "corner");
-//	Mesh corner("models/Corners/b_oriented_cut_corner.obj", "corner");
-	Mesh ship("models/ship2.obj", "ship");
+//	Mesh corner("models/Corners/b_Sharp_Corner_oriented.obj", "corner");
+	Mesh corner("models/Corners/b_oriented_cut_corner.obj", "corner");
 	std::vector<Mesh*> meshes;
-	meshes.resize(3);
+	meshes.resize(2);
 	meshes[0] = &plane;
 	meshes[1] = &corner;
-	meshes[2] = &ship;
 	Window mainWindow(width,height);
 
 #ifdef LINUX

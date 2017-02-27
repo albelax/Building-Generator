@@ -20,15 +20,15 @@ glm/simd/* \
 models/* \
 Shaders/*
 
-macx:
-{
-LIBS += -F/Library/Frameworks -framework SDL2
-INCLUDEPATH += /Library/Frameworks/SDL.framework/Headers
-INCLUDEPATH += /usr/local/include/SDL2
-}
+#macx
+#{
+macx:LIBS += -F/Library/Frameworks -framework SDL2
+macx:INCLUDEPATH += /Library/Frameworks/SDL.framework/Headers
+macx:INCLUDEPATH += /usr/local/include/SDL2
+#}
 
-#QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
-#LIBS += $$system(sdl2-config --libs)
+QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
+LIBS += $$system(sdl2-config --libs)
 
 LIBS += -L/usr/local/lib
 
