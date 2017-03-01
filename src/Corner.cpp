@@ -1,11 +1,11 @@
 #include "Corner.h"
 
-Corner::Corner(Building &_base)
+Corner::Corner(Walls &_base)
 {
 	makeRotationTable();
 	makeTranslationTable();
-	m_corners_MVs.resize(_base.getRule()->length());
-	std::vector<glm::mat4>::iterator it = m_corners_MVs.begin();
+	m_MVs.resize(_base.getRule()->length());
+	std::vector<glm::mat4>::iterator it = m_MVs.begin();
 	for (size_t i = 0; i < _base.getRule()->length(); ++i)
 	{
 		unsigned int column;
@@ -31,26 +31,26 @@ Corner::Corner(Building &_base)
 			glm::mat4 tmp(1.0f);
 			// in case the angle is concave use the first one else the other one, you may want to use different meshes
 			if (m_translationTable[column][row] == 0)
-				tmp = glm::translate(_base.getWallsMVs()[i], glm::vec3(0.256f,0,0.745f));
+				tmp = glm::translate(_base.getMVs()[i], glm::vec3(0.256f,0,0.745f));
 			else if (m_translationTable[column][row] == 1)
-				tmp = glm::translate(_base.getWallsMVs()[i], glm::vec3(-0.256,0,0.745f));
+				tmp = glm::translate(_base.getMVs()[i], glm::vec3(-0.256,0,0.745f));
 
 			(*it) = glm::rotate(tmp, glm::radians(m_rotationTable[column][row]), glm::vec3(0.0f, 0.1f, 0.0f));
 			it++;
 		}
 	}
-	m_corners_MVs.resize(std::distance(m_corners_MVs.begin(), it));
-	for (auto i : m_corners_MVs)
-	{
-		glm::vec3 scale(1.0f);
-		glm::quat rotation;
-		glm::vec3 translation(1.0f);
-		glm::vec3 skew(1.0f);
-		glm::vec4 perspective(1.0f);
-		glm::mat4 p = i;
-		glm::decompose(p,scale,rotation,translation,skew,perspective);
-		std::cout << glm::to_string(translation) << '\n';
-	}
+	m_MVs.resize(std::distance(m_MVs.begin(), it));
+//	for (auto i : m_MVs)
+//	{
+//		glm::vec3 scale(1.0f);
+//		glm::quat rotation;
+//		glm::vec3 translation(1.0f);
+//		glm::vec3 skew(1.0f);
+//		glm::vec4 perspective(1.0f);
+//		glm::mat4 p = i;
+//		glm::decompose(p,scale,rotation, translation, skew, perspective);
+//		std::cout << glm::to_string(translation) << '\n';
+//	}
 }
 
 void Corner::makeRotationTable()

@@ -18,6 +18,8 @@ glm/gtc/* \
 glm/gtx* \
 glm/simd/* \
 models/* \
+models/Walls/* \
+models/Corners/* \
 Shaders/*
 
 #macx

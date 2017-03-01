@@ -27,6 +27,8 @@
 #include "Shader.h"
 #include "Buffer.h"
 #include "Building.h"
+#include "Object.h"
+#include "Walls.h"
 #include "Mesh.h"
 #include "Corner.h"
 #include "TrackballCamera.h"
@@ -64,19 +66,43 @@ int main()
 	glLinkProgram(test.getShaderProgram());
 	glUseProgram(test.getShaderProgram());
 
-	int bufferSize = 0;
-	std::vector<Mesh*>::iterator meshes_it;
-	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
+	Walls walls = Walls("rrrurruuuuldlluldddddd");
+	Corner corners = Corner(walls);
+	glViewport(0,0,width, height);
+
+	std::vector<float> originalData = plane.getCopy();
+	std::vector<float> transformedData;
+	transformedData.resize(originalData.size()*walls.getMVs().size());
+
+	std::vector<float>::iterator trans_it = transformedData.begin();
+	for (auto mv : walls.getMVs())
 	{
-		bufferSize += (*meshes_it)->getAmountVertexData();
+		for (size_t i = 0; i < originalData.size()/3; ++i)
+		{
+			glm::vec4 tmp(originalData[i*3], originalData[i*3+1],originalData[i*3+2], 1);
+			tmp = mv * tmp;
+			(*trans_it++) = (tmp.x);
+			(*trans_it++) = (tmp.y);
+			(*trans_it++) = (tmp.z);
+		}
 	}
 
+	int bufferSize = transformedData.size();
+	std::vector<Mesh*>::iterator meshes_it;
+//	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
+//	{
+//		bufferSize += (*meshes_it)->getAmountVertexData();
+//	}
+
 	Buffer buffer(bufferSize, sizeof(float)); // generate vbo buffer
-	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
-	{
-		// push vertices of each mesh to the buffer assigning the corresponding index in the buffer to the mesh
-		(*meshes_it)->setBufferIndex(buffer.append((void*) &(*meshes_it)->getVertexData(), (*meshes_it)->getAmountVertexData(), Buffer::VERTEX));
-	}
+	buffer.append((void *) &transformedData[0], transformedData.size(), Buffer::VERTEX);
+//	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
+//	{
+//		// push vertices of each mesh to the buffer assigning the corresponding index in the buffer to the mesh
+//		std::vector<float> tmp = (*meshes_it)->getCopy();
+//		(*meshes_it)->setBufferIndex(buffer.append((void*) &tmp[0], (*meshes_it)->getAmountVertexData(), Buffer::VERTEX));
+//	}
+
 
 	// pass the vertex data to the shader
 	GLint pos = glGetAttribLocation(test.getShaderProgram(), "VertexPosition");
@@ -109,9 +135,6 @@ int main()
 	mainCamera.setTarget(0.0f,0.0f,0.0f);
 	mainCamera.setEye(0.0f, 2.0f, -5.0f);
 
-	Building building = Building();
-	Corner corners = Corner(building);
-	glViewport(0,0,width, height);
 	SDL_Event event;
 	bool quit = false;
 
@@ -122,7 +145,7 @@ int main()
 
 		while (SDL_PollEvent(&event))
 		{
-			if (event.type == SDL_QUIT)// || event.key.keysym.sym == SDLK_ESCAPE)
+			if (event.type == SDL_QUIT) // || event.key.keysym.sym == SDLK_ESCAPE)
 				quit = true;
 
 			if (event.type == SDL_WINDOWEVENT)
@@ -145,26 +168,26 @@ int main()
 		glClearColor(1.0f,1.0f,1.0f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (size_t i = 0; i < building.getWallsMVs().size(); i++)
-	{
-		MVP = projection * mainCamera.viewMatrix() * building.getWallsMVs()[i];
-		N = glm::mat3(glm::inverse(glm::transpose(building.getWallsMVs()[i])));
+//	for (size_t i = 0; i < building.getWallsMVs().size(); i++)
+//	{
+		MVP = projection * mainCamera.viewMatrix() * glm::mat4(1.0f);
+		N = glm::mat3(glm::inverse(glm::transpose(glm::mat4(1.0f))));
 		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(building.getWallsMVs()[i]));
+		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
-		glDrawArrays(GL_TRIANGLES, plane.getBufferIndex()/3, (plane.getAmountVertexData()/3));
-	}
+		glDrawArrays(GL_TRIANGLES, 0, transformedData.size()/3);
+//	}
 
-	if (corners.getCornersMVs().size() > 0)
-	for (size_t i = 0; i < corners.getCornersMVs().size(); ++i)
-	{
-		MVP = projection * mainCamera.viewMatrix() * corners.getCornersMVs()[i];
-		N = glm::mat3(glm::inverse(glm::transpose(corners.getCornersMVs()[i])));
-		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(corners.getCornersMVs()[i]));
-		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
-		glDrawArrays(GL_TRIANGLES, corner.getBufferIndex()/3, (corner.getAmountVertexData()/3));
-	}
+//	if (corners.getCornersMVs().size() > 0)
+//	for (size_t i = 0; i < corners.getCornersMVs().size(); ++i)
+//	{
+//		MVP = projection * mainCamera.viewMatrix() * corners.getCornersMVs()[i];
+//		N = glm::mat3(glm::inverse(glm::transpose(corners.getCornersMVs()[i])));
+//		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
+//		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(corners.getCornersMVs()[i]));
+//		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
+//		glDrawArrays(GL_TRIANGLES, corner.getBufferIndex()/3, (corner.getAmountVertexData()/3));
+//	}
 
 	SDL_GL_SwapWindow(mainWindow.getWindow());
 	}

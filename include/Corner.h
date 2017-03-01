@@ -10,24 +10,21 @@
 #include "glm/ext.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtx/matrix_decompose.hpp"
-//#include "glm/gtx/string_cast.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/ext.hpp"
-#include "Building.h"
+#include "Walls.h"
+#include "Object.h"
 
-class Corner
+
+class Corner : public Object
 {
 public:
 	Corner() = delete;
-	Corner(Building &_base);
-	const std::vector<glm::mat4> & getCornersMVs() {return m_corners_MVs;}
+	Corner(Walls &_base);
+	const std::vector<glm::mat4> & getCornersMVs() { return m_MVs; }
 private:
-	std::vector<std::vector<float>> m_rotationTable;
-	std::vector<std::vector<float>> m_translationTable;
-	std::vector<glm::mat4> m_corners_MVs;
-	//void generateCorners();
-	void makeRotationTable();
-	void makeTranslationTable();
+	void makeRotationTable() override;
+	void makeTranslationTable() override;
 };
 
 #endif // CORNER_H

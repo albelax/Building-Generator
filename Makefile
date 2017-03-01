@@ -14,7 +14,7 @@ CC            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 DEFINES       = -DQT_QML_DEBUG
 CFLAGS        = -pipe -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -g -Wall -W -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -stdlib=libc++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -g -std=gnu++11 -Wall -W -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -stdlib=libc++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -I/usr/local/include/SDL2 -D_THREAD_SAFE -g -std=gnu++11 -Wall -W -fPIC $(DEFINES)
 INCPATH       = -I. -Iinclude -Imodels -Iglm -IShaders -I/Library/Frameworks/SDL.framework/Headers -I/usr/local/include/SDL2 -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I../Qt/5.8/clang_64/mkspecs/macx-clang
 QMAKE         = /Users/albertolascala/Qt/5.8/clang_64/bin/qmake
 DEL_FILE      = rm -f
@@ -36,7 +36,7 @@ DISTNAME      = BuildingGenerator1.0.0
 DISTDIR = /Users/albertolascala/Building-Generator/.tmp/BuildingGenerator1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -headerpad_max_install_names -stdlib=libc++ -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_LFLAGS)
-LIBS          = $(SUBLIBS) -F/Library/Frameworks -framework SDL2 -L/usr/local/lib -framework OpenGL -lGLEW -framework AGL 
+LIBS          = $(SUBLIBS) -F/Library/Frameworks -framework SDL2 -L/usr/local/lib -lSDL2 -framework OpenGL -lGLEW -framework AGL 
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
 SED           = sed
@@ -54,9 +54,11 @@ SOURCES       = src/Buffer.cpp \
 		src/Corner.cpp \
 		src/main.cpp \
 		src/Mesh.cpp \
+		src/Object.cpp \
 		src/Shader.cpp \
 		src/TrackballCamera.cpp \
 		src/UtilityFunctions.cpp \
+		src/Walls.cpp \
 		src/Window.cpp 
 OBJECTS       = Buffer.o \
 		Building.o \
@@ -64,9 +66,11 @@ OBJECTS       = Buffer.o \
 		Corner.o \
 		main.o \
 		Mesh.o \
+		Object.o \
 		Shader.o \
 		TrackballCamera.o \
 		UtilityFunctions.o \
+		Walls.o \
 		Window.o
 DIST          = ../Qt/5.8/clang_64/mkspecs/features/spec_pre.prf \
 		../Qt/5.8/clang_64/mkspecs/qdevice.pri \
@@ -245,9 +249,11 @@ DIST          = ../Qt/5.8/clang_64/mkspecs/features/spec_pre.prf \
 		src/Corner.cpp \
 		src/main.cpp \
 		src/Mesh.cpp \
+		src/Object.cpp \
 		src/Shader.cpp \
 		src/TrackballCamera.cpp \
 		src/UtilityFunctions.cpp \
+		src/Walls.cpp \
 		src/Window.cpp
 QMAKE_TARGET  = BuildingGenerator
 DESTDIR       = 
@@ -748,6 +754,7 @@ Building.o: src/Building.cpp include/Building.h \
 		glm/detail/func_integer.inl \
 		glm/detail/func_integer_simd.inl \
 		glm/simd/integer.h \
+		include/Object.h \
 		glm/gtc/matrix_transform.hpp \
 		glm/gtc/constants.hpp \
 		glm/gtc/constants.inl \
@@ -1262,7 +1269,10 @@ Corner.o: src/Corner.cpp include/Corner.h \
 		glm/gtx/wrap.inl \
 		glm/gtx/scalar_multiplication.hpp \
 		glm/gtx/range.hpp \
-		include/Building.h
+		glm/gtx/matrix_decompose.hpp \
+		glm/gtx/matrix_decompose.inl \
+		include/Building.h \
+		include/Object.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Corner.o src/Corner.cpp
 
 main.o: src/main.cpp /usr/local/include/SDL2/SDL.h \
@@ -1538,7 +1548,10 @@ main.o: src/main.cpp /usr/local/include/SDL2/SDL.h \
 		include/Building.h \
 		include/Mesh.h \
 		include/UtilityFunctions.h \
+		include/Object.h \
 		include/Corner.h \
+		glm/gtx/matrix_decompose.hpp \
+		glm/gtx/matrix_decompose.inl \
 		include/TrackballCamera.h \
 		include/Camera.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
@@ -1638,6 +1651,235 @@ Mesh.o: src/Mesh.cpp include/Mesh.h \
 		glm/detail/func_integer_simd.inl \
 		glm/simd/integer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Mesh.o src/Mesh.cpp
+
+Object.o: src/Object.cpp include/Object.h \
+		include/Mesh.h \
+		include/UtilityFunctions.h \
+		glm/glm.hpp \
+		glm/detail/_fixes.hpp \
+		glm/fwd.hpp \
+		glm/detail/type_int.hpp \
+		glm/detail/setup.hpp \
+		glm/simd/platform.h \
+		glm/detail/type_float.hpp \
+		glm/detail/type_vec.hpp \
+		glm/detail/precision.hpp \
+		glm/detail/type_mat.hpp \
+		glm/vec2.hpp \
+		glm/detail/type_vec2.hpp \
+		glm/detail/_swizzle.hpp \
+		glm/detail/_swizzle_func.hpp \
+		glm/detail/type_vec2.inl \
+		glm/vec3.hpp \
+		glm/detail/type_vec3.hpp \
+		glm/detail/type_vec3.inl \
+		glm/vec4.hpp \
+		glm/detail/type_vec4.hpp \
+		glm/detail/type_vec4.inl \
+		glm/detail/type_vec4_simd.inl \
+		glm/mat2x2.hpp \
+		glm/detail/type_mat2x2.hpp \
+		glm/detail/type_mat2x2.inl \
+		glm/detail/func_matrix.hpp \
+		glm/mat2x3.hpp \
+		glm/detail/type_mat2x3.hpp \
+		glm/detail/type_mat2x3.inl \
+		glm/mat2x4.hpp \
+		glm/detail/type_mat2x4.hpp \
+		glm/detail/type_mat2x4.inl \
+		glm/mat3x2.hpp \
+		glm/detail/type_mat3x2.hpp \
+		glm/detail/type_mat3x2.inl \
+		glm/mat3x3.hpp \
+		glm/detail/type_mat3x3.hpp \
+		glm/detail/type_mat3x3.inl \
+		glm/mat3x4.hpp \
+		glm/detail/type_mat3x4.hpp \
+		glm/detail/type_mat3x4.inl \
+		glm/mat4x2.hpp \
+		glm/detail/type_mat4x2.hpp \
+		glm/detail/type_mat4x2.inl \
+		glm/mat4x3.hpp \
+		glm/detail/type_mat4x3.hpp \
+		glm/detail/type_mat4x3.inl \
+		glm/mat4x4.hpp \
+		glm/detail/type_mat4x4.hpp \
+		glm/detail/type_mat4x4.inl \
+		glm/detail/type_mat4x4_simd.inl \
+		glm/detail/func_matrix.inl \
+		glm/geometric.hpp \
+		glm/detail/func_geometric.hpp \
+		glm/detail/func_geometric.inl \
+		glm/detail/func_exponential.hpp \
+		glm/detail/type_vec1.hpp \
+		glm/detail/type_vec1.inl \
+		glm/detail/func_exponential.inl \
+		glm/detail/func_vector_relational.hpp \
+		glm/detail/func_vector_relational.inl \
+		glm/detail/func_vector_relational_simd.inl \
+		glm/detail/_vectorize.hpp \
+		glm/detail/func_exponential_simd.inl \
+		glm/simd/exponential.h \
+		glm/detail/func_common.hpp \
+		glm/detail/func_common.inl \
+		glm/detail/func_common_simd.inl \
+		glm/simd/common.h \
+		glm/detail/func_geometric_simd.inl \
+		glm/simd/geometric.h \
+		glm/detail/func_matrix_simd.inl \
+		glm/simd/matrix.h \
+		glm/trigonometric.hpp \
+		glm/detail/func_trigonometric.hpp \
+		glm/detail/func_trigonometric.inl \
+		glm/detail/func_trigonometric_simd.inl \
+		glm/exponential.hpp \
+		glm/common.hpp \
+		glm/packing.hpp \
+		glm/detail/func_packing.hpp \
+		glm/detail/func_packing.inl \
+		glm/detail/type_half.hpp \
+		glm/detail/type_half.inl \
+		glm/detail/func_packing_simd.inl \
+		glm/matrix.hpp \
+		glm/vector_relational.hpp \
+		glm/integer.hpp \
+		glm/detail/func_integer.hpp \
+		glm/detail/func_integer.inl \
+		glm/detail/func_integer_simd.inl \
+		glm/simd/integer.h \
+		glm/gtc/matrix_transform.hpp \
+		glm/gtc/constants.hpp \
+		glm/gtc/constants.inl \
+		glm/gtc/matrix_transform.inl \
+		glm/gtc/type_ptr.hpp \
+		glm/gtc/quaternion.hpp \
+		glm/gtc/quaternion.inl \
+		glm/gtc/quaternion_simd.inl \
+		glm/gtc/type_ptr.inl \
+		glm/ext.hpp \
+		glm/gtc/bitfield.hpp \
+		glm/gtc/bitfield.inl \
+		glm/gtc/color_space.hpp \
+		glm/gtc/color_space.inl \
+		glm/gtc/epsilon.hpp \
+		glm/gtc/epsilon.inl \
+		glm/gtc/functions.hpp \
+		glm/gtc/functions.inl \
+		glm/gtc/integer.hpp \
+		glm/gtc/integer.inl \
+		glm/gtc/matrix_access.hpp \
+		glm/gtc/matrix_access.inl \
+		glm/gtc/matrix_integer.hpp \
+		glm/gtc/matrix_inverse.hpp \
+		glm/gtc/matrix_inverse.inl \
+		glm/gtc/noise.hpp \
+		glm/detail/_noise.hpp \
+		glm/gtc/noise.inl \
+		glm/gtc/packing.hpp \
+		glm/gtc/type_precision.hpp \
+		glm/gtc/vec1.hpp \
+		glm/gtc/vec1.inl \
+		glm/gtc/type_precision.inl \
+		glm/gtc/packing.inl \
+		glm/gtc/random.hpp \
+		glm/gtc/random.inl \
+		glm/gtc/reciprocal.hpp \
+		glm/gtc/reciprocal.inl \
+		glm/gtc/round.hpp \
+		glm/gtc/round.inl \
+		glm/gtc/ulp.hpp \
+		glm/gtc/ulp.inl \
+		glm/gtc/type_aligned.hpp \
+		glm/gtx/associated_min_max.hpp \
+		glm/gtx/associated_min_max.inl \
+		glm/gtx/bit.hpp \
+		glm/gtx/bit.inl \
+		glm/gtx/closest_point.hpp \
+		glm/gtx/closest_point.inl \
+		glm/gtx/color_space.hpp \
+		glm/gtx/color_space_YCoCg.hpp \
+		glm/gtx/color_space_YCoCg.inl \
+		glm/gtx/compatibility.hpp \
+		glm/gtx/compatibility.inl \
+		glm/gtx/component_wise.hpp \
+		glm/gtx/component_wise.inl \
+		glm/gtx/dual_quaternion.hpp \
+		glm/gtx/dual_quaternion.inl \
+		glm/gtx/euler_angles.hpp \
+		glm/gtx/euler_angles.inl \
+		glm/gtx/extend.hpp \
+		glm/gtx/extend.inl \
+		glm/gtx/extended_min_max.hpp \
+		glm/gtx/extended_min_max.inl \
+		glm/gtx/fast_exponential.hpp \
+		glm/gtx/fast_exponential.inl \
+		glm/gtx/fast_square_root.hpp \
+		glm/gtx/fast_square_root.inl \
+		glm/gtx/fast_trigonometry.hpp \
+		glm/gtx/fast_trigonometry.inl \
+		glm/gtx/gradient_paint.hpp \
+		glm/gtx/optimum_pow.hpp \
+		glm/gtx/optimum_pow.inl \
+		glm/gtx/gradient_paint.inl \
+		glm/gtx/handed_coordinate_space.hpp \
+		glm/gtx/handed_coordinate_space.inl \
+		glm/gtx/integer.hpp \
+		glm/gtx/intersect.hpp \
+		glm/gtx/vector_query.hpp \
+		glm/gtx/vector_query.inl \
+		glm/gtx/intersect.inl \
+		glm/gtx/log_base.hpp \
+		glm/gtx/log_base.inl \
+		glm/gtx/matrix_cross_product.hpp \
+		glm/gtx/matrix_cross_product.inl \
+		glm/gtx/matrix_interpolation.hpp \
+		glm/gtx/matrix_interpolation.inl \
+		glm/gtx/matrix_major_storage.hpp \
+		glm/gtx/matrix_major_storage.inl \
+		glm/gtx/matrix_operation.hpp \
+		glm/gtx/matrix_operation.inl \
+		glm/gtx/matrix_query.hpp \
+		glm/gtx/matrix_query.inl \
+		glm/gtx/mixed_product.hpp \
+		glm/gtx/mixed_product.inl \
+		glm/gtx/norm.hpp \
+		glm/gtx/quaternion.hpp \
+		glm/gtx/norm.inl \
+		glm/gtx/normal.hpp \
+		glm/gtx/normal.inl \
+		glm/gtx/normalize_dot.hpp \
+		glm/gtx/normalize_dot.inl \
+		glm/gtx/number_precision.hpp \
+		glm/gtx/number_precision.inl \
+		glm/gtx/orthonormalize.hpp \
+		glm/gtx/orthonormalize.inl \
+		glm/gtx/perpendicular.hpp \
+		glm/gtx/projection.hpp \
+		glm/gtx/projection.inl \
+		glm/gtx/perpendicular.inl \
+		glm/gtx/polar_coordinates.hpp \
+		glm/gtx/polar_coordinates.inl \
+		glm/gtx/raw_data.hpp \
+		glm/gtx/raw_data.inl \
+		glm/gtx/rotate_vector.hpp \
+		glm/gtx/transform.hpp \
+		glm/gtx/transform.inl \
+		glm/gtx/rotate_vector.inl \
+		glm/gtx/spline.hpp \
+		glm/gtx/spline.inl \
+		glm/gtx/std_based_type.hpp \
+		glm/gtx/std_based_type.inl \
+		glm/gtx/string_cast.hpp \
+		glm/gtx/string_cast.inl \
+		glm/gtx/transform2.hpp \
+		glm/gtx/transform2.inl \
+		glm/gtx/vector_angle.hpp \
+		glm/gtx/vector_angle.inl \
+		glm/gtx/wrap.hpp \
+		glm/gtx/wrap.inl \
+		glm/gtx/scalar_multiplication.hpp \
+		glm/gtx/range.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Object.o src/Object.cpp
 
 Shader.o: src/Shader.cpp include/Shader.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Shader.o src/Shader.cpp
@@ -1801,6 +2043,9 @@ TrackballCamera.o: src/TrackballCamera.cpp include/TrackballCamera.h \
 
 UtilityFunctions.o: src/UtilityFunctions.cpp include/UtilityFunctions.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o UtilityFunctions.o src/UtilityFunctions.cpp
+
+Walls.o: src/Walls.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Walls.o src/Walls.cpp
 
 Window.o: src/Window.cpp include/Window.h \
 		/usr/local/include/SDL2/SDL.h \
