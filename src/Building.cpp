@@ -16,3 +16,5 @@ void Building::generateBase()
 	m_rule = "rrrurruuuuldlluldddddd";
 	m_rule = "rurdruuulllllddd";
 }
+
+

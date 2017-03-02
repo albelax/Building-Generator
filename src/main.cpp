@@ -13,6 +13,7 @@
 #define LINUX
 #endif
 
+
 #include <iostream>
 #include <SDL.h>
 #include <vector>
@@ -70,24 +71,38 @@ int main()
 	Corner corners = Corner(walls);
 	glViewport(0,0,width, height);
 
-	std::vector<float> originalData = plane.getCopy();
-	std::vector<float> transformedData;
-	transformedData.resize(originalData.size()*walls.getMVs().size());
+	std::vector<float> originalVertices = plane.getCopy();
+	std::vector<float> originalNormals = plane.getCopyNormal();
+	std::vector<float> transformedVertices;
+	std::vector<float> transformedNormals;
 
-	std::vector<float>::iterator trans_it = transformedData.begin();
+	transformedVertices.resize(originalVertices.size()*walls.getMVs().size());
+	transformedNormals.resize(originalNormals.size()*walls.getMVs().size());
+
+	std::vector<float>::iterator vertices_it = transformedVertices.begin();
+	std::vector<float>::iterator normals_it = transformedNormals.begin();
+
 	for (auto mv : walls.getMVs())
 	{
-		for (size_t i = 0; i < originalData.size()/3; ++i)
+		for (size_t i = 0; i < originalVertices.size()/3; ++i)
 		{
-			glm::vec4 tmp(originalData[i*3], originalData[i*3+1],originalData[i*3+2], 1);
-			tmp = mv * tmp;
-			(*trans_it++) = (tmp.x);
-			(*trans_it++) = (tmp.y);
-			(*trans_it++) = (tmp.z);
+			glm::vec4 _tmp_vertices(originalVertices[i*3], originalVertices[i*3+1],originalVertices[i*3+2], 1);
+			glm::vec4 _tmp_normals(originalNormals[i*3], originalNormals[i*3+1],originalNormals[i*3+2], 1);
+			_tmp_vertices = mv * _tmp_vertices;
+			_tmp_normals = /*mv **/ _tmp_normals;
+			//			_tmp_normals = glm::normalize(_tmp_normals);
+
+			(*vertices_it++) = (_tmp_vertices.x);
+			(*vertices_it++) = (_tmp_vertices.y);
+			(*vertices_it++) = (_tmp_vertices.z);
+
+			(*normals_it++) = (_tmp_normals.x);
+			(*normals_it++) = (_tmp_normals.y);
+			(*normals_it++) = (_tmp_normals.z);
 		}
 	}
 
-	int bufferSize = transformedData.size();
+	int bufferSize = transformedVertices.size();
 	std::vector<Mesh*>::iterator meshes_it;
 //	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
 //	{
@@ -95,7 +110,7 @@ int main()
 //	}
 
 	Buffer buffer(bufferSize, sizeof(float)); // generate vbo buffer
-	buffer.append((void *) &transformedData[0], transformedData.size(), Buffer::VERTEX);
+	buffer.append((void *) &transformedVertices[0], transformedVertices.size(), Buffer::VERTEX);
 //	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
 //	{
 //		// push vertices of each mesh to the buffer assigning the corresponding index in the buffer to the mesh
@@ -109,10 +124,11 @@ int main()
 	glEnableVertexAttribArray(pos);
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
-	{
-		(*meshes_it)->setBufferIndex(buffer.append((void*) &(*meshes_it)->getNormalsData(), (*meshes_it)->getAmountVertexData(), Buffer::NORMAL));
-	}
+	buffer.append((void *) &transformedNormals[0], transformedNormals.size(), Buffer::NORMAL);
+//	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
+//	{
+//		(*meshes_it)->setBufferIndex(buffer.append((void*) &(*meshes_it)->getNormalsData(), (*meshes_it)->getAmountVertexData(), Buffer::NORMAL));
+//	}
 
 	// pass the normals to the shader
 	GLint n = glGetAttribLocation(test.getShaderProgram(), "VertexNormal");
@@ -175,7 +191,7 @@ int main()
 		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
-		glDrawArrays(GL_TRIANGLES, 0, transformedData.size()/3);
+		glDrawArrays(GL_TRIANGLES, 0, transformedVertices.size()/3);
 //	}
 
 //	if (corners.getCornersMVs().size() > 0)
