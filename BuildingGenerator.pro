@@ -24,9 +24,9 @@ Shaders/*
 
 #macx
 #{
-macx:LIBS += -F/Library/Frameworks -framework SDL2
-macx:INCLUDEPATH += /Library/Frameworks/SDL.framework/Headers
-macx:INCLUDEPATH += /usr/local/include/SDL2
+#macx:LIBS += -F/Library/Frameworks -framework SDL2
+#macx:INCLUDEPATH += /Library/Frameworks/SDL.framework/Headers
+#macx:INCLUDEPATH += /usr/local/include/SDL2
 #}
 
 QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)

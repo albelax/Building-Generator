@@ -41,14 +41,6 @@ int main()
 	int width = 800;
 	int height = 600;
 
-	Mesh plane("models/Walls/L.obj", "wall");
-//	Mesh plane("models/Walls/Plane.obj", "wall");
-//	Mesh corner("models/Corners/b_Sharp_Corner_oriented.obj", "corner");
-	Mesh corner("models/Corners/b_oriented_cut_corner.obj", "corner");
-	std::vector<Mesh*> meshes;
-	meshes.resize(2);
-	meshes[0] = &plane;
-	meshes[1] = &corner;
 	Window mainWindow(width,height);
 
 #ifdef LINUX
@@ -67,69 +59,20 @@ int main()
 	glLinkProgram(test.getShaderProgram());
 	glUseProgram(test.getShaderProgram());
 
-	Walls walls = Walls("rrrurruuuuldlluldddddd");
-	Corner corners = Corner(walls);
 	glViewport(0,0,width, height);
 
-	std::vector<float> originalVertices = plane.getCopy();
-	std::vector<float> originalNormals = plane.getCopyNormal();
-	std::vector<float> transformedVertices;
-	std::vector<float> transformedNormals;
-
-	transformedVertices.resize(originalVertices.size()*walls.getMVs().size());
-	transformedNormals.resize(originalNormals.size()*walls.getMVs().size());
-
-	std::vector<float>::iterator vertices_it = transformedVertices.begin();
-	std::vector<float>::iterator normals_it = transformedNormals.begin();
-
-	for (auto mv : walls.getMVs())
-	{
-		for (size_t i = 0; i < originalVertices.size()/3; ++i)
-		{
-			glm::vec4 _tmp_vertices(originalVertices[i*3], originalVertices[i*3+1],originalVertices[i*3+2], 1);
-			glm::vec4 _tmp_normals(originalNormals[i*3], originalNormals[i*3+1],originalNormals[i*3+2], 1);
-			_tmp_vertices = mv * _tmp_vertices;
-			_tmp_normals = /*mv **/ _tmp_normals;
-			//			_tmp_normals = glm::normalize(_tmp_normals);
-
-			(*vertices_it++) = (_tmp_vertices.x);
-			(*vertices_it++) = (_tmp_vertices.y);
-			(*vertices_it++) = (_tmp_vertices.z);
-
-			(*normals_it++) = (_tmp_normals.x);
-			(*normals_it++) = (_tmp_normals.y);
-			(*normals_it++) = (_tmp_normals.z);
-		}
-	}
-
-	int bufferSize = transformedVertices.size();
-	std::vector<Mesh*>::iterator meshes_it;
-//	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
-//	{
-//		bufferSize += (*meshes_it)->getAmountVertexData();
-//	}
+	Building building = Building();
+	int bufferSize = building.amountVertices();
 
 	Buffer buffer(bufferSize, sizeof(float)); // generate vbo buffer
-	buffer.append((void *) &transformedVertices[0], transformedVertices.size(), Buffer::VERTEX);
-//	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
-//	{
-//		// push vertices of each mesh to the buffer assigning the corresponding index in the buffer to the mesh
-//		std::vector<float> tmp = (*meshes_it)->getCopy();
-//		(*meshes_it)->setBufferIndex(buffer.append((void*) &tmp[0], (*meshes_it)->getAmountVertexData(), Buffer::VERTEX));
-//	}
-
+	building.setBufferIndex(buffer.append((void *) building.getVertices(), building.amountVertices(), Buffer::VERTEX));
 
 	// pass the vertex data to the shader
 	GLint pos = glGetAttribLocation(test.getShaderProgram(), "VertexPosition");
 	glEnableVertexAttribArray(pos);
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	buffer.append((void *) &transformedNormals[0], transformedNormals.size(), Buffer::NORMAL);
-//	for (meshes_it = meshes.begin(); meshes_it != meshes.end(); ++meshes_it)
-//	{
-//		(*meshes_it)->setBufferIndex(buffer.append((void*) &(*meshes_it)->getNormalsData(), (*meshes_it)->getAmountVertexData(), Buffer::NORMAL));
-//	}
-
+	buffer.append((void *) building.getNormals(), building.amountVertices(), Buffer::NORMAL);
 	// pass the normals to the shader
 	GLint n = glGetAttribLocation(test.getShaderProgram(), "VertexNormal");
 	glEnableVertexAttribArray(n);
@@ -184,28 +127,14 @@ int main()
 		glClearColor(1.0f,1.0f,1.0f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//	for (size_t i = 0; i < building.getWallsMVs().size(); i++)
-//	{
 		MVP = projection * mainCamera.viewMatrix() * glm::mat4(1.0f);
 		N = glm::mat3(glm::inverse(glm::transpose(glm::mat4(1.0f))));
 		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
-		glDrawArrays(GL_TRIANGLES, 0, transformedVertices.size()/3);
-//	}
+		glDrawArrays(GL_TRIANGLES, 0, building.amountVertices()/3);
 
-//	if (corners.getCornersMVs().size() > 0)
-//	for (size_t i = 0; i < corners.getCornersMVs().size(); ++i)
-//	{
-//		MVP = projection * mainCamera.viewMatrix() * corners.getCornersMVs()[i];
-//		N = glm::mat3(glm::inverse(glm::transpose(corners.getCornersMVs()[i])));
-//		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
-//		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(corners.getCornersMVs()[i]));
-//		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
-//		glDrawArrays(GL_TRIANGLES, corner.getBufferIndex()/3, (corner.getAmountVertexData()/3));
-//	}
-
-	SDL_GL_SwapWindow(mainWindow.getWindow());
+		SDL_GL_SwapWindow(mainWindow.getWindow());
 	}
 	glDeleteProgram(test.getShaderProgram());
 	return EXIT_SUCCESS;

@@ -3,7 +3,6 @@
 
 Object::Object()
 {
-	std::cout << "CONSTRUCTOR OBJECT \n";
 }
 
 

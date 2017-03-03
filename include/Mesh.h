@@ -33,11 +33,13 @@ public:
 	void draw() const;
 	glm::vec4 min()const { return glm::vec4(m_minX,m_minY,m_minZ,1); }
 	glm::vec4 max()const { return glm::vec4(m_maxX,m_maxY,m_maxZ,1); }
-	const float &getVertexData() const { return m_vertices[0]; }
+	const std::vector<float> &getVertices() const { return m_vertices; }
+//	float * getVertexData() { return &m_vertices[0]; }
 	std::vector<float> getCopy() const { return m_vertices; }
 	std::vector<float> getCopyNormal() const { return m_normals; }
-	const float &getNormalsData() const { return m_normals[0]; }
-	int getAmountVertexData() const { return static_cast<int>(m_vertices.size()); }
+	const std::vector<float> &getNormals() const { return m_normals; }
+//	float * getNormalsData() { return &m_normals[0]; }
+	size_t getAmountVertexData() const { return static_cast<int>(m_vertices.size()); }
 	int getBufferIndex() const { return m_bufferIndex; }
 	std::string name() const { return m_name; }
 };
