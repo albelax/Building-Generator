@@ -3,6 +3,7 @@
 
 #include "Object.h"
 #include "Walls.h"
+#include <vector>
 
 class Roof : public Object
 {

@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <string>
+#include <dirent.h>
+
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
@@ -32,11 +34,9 @@ private:
 	/// generating the rule that will make the walls
 	void generateBase();
 	void combinearrays(Mesh & _mesh, Object * _object);
-//	Walls m_walls;
-//	Corner m_corners;
-//	Roof m_roof;
 	std::vector<float> m_vertices;
 	std::vector<float> m_normals;
+	int m_height;
 };
 
 #endif // BUILDING_H

@@ -2,7 +2,7 @@
 
 Walls::Walls(std::string _rule)
 {
-	m_padding = 1.0000001;//1.001f;  //0.8f;
+	m_padding = 1.5f;
 	m_rule = _rule;
 	m_MVs.resize(m_rule.length());
 	makeRotationTable();
@@ -68,8 +68,14 @@ void Walls::generateMVs()
 			case 'd': row = 3; break;
 		}
 		// if the column is the same as the
+
 		float x = m_translationTable[column][row] == 1 ? 0 : m_translationTable[column][row];
+		float correction_x = 0;
+		if (x != 0)
+			correction_x = x > 0 ? -.5f : 0.5f;
 		wall_MV = glm::translate(wall_MV, glm::vec3(x, 0, m_padding));
+		wall_MV = glm::translate(wall_MV, glm::vec3(correction_x, 0, -0.5f));
+
 		totX = std::max(totX, wall_MV[3][0]);
 		totZ = std::max(totZ, wall_MV[3][2]);
 		wall_MV = glm::rotate(wall_MV, glm::radians(static_cast<float>(m_rotationTable[column][row])), glm::vec3(0,1.0f,0));

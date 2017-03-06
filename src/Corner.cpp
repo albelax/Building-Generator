@@ -6,7 +6,7 @@ Corner::Corner(Walls &_base)
 	makeTranslationTable();
 	m_MVs.resize(_base.getRule()->length());
 	std::vector<glm::mat4>::iterator it = m_MVs.begin();
-	for (size_t i = 0; i < _base.getRule()->length(); ++i)
+	for (unsigned int i = 0; i < _base.getRule()->length(); ++i)
 	{
 		unsigned int column;
 		unsigned int row;
@@ -40,17 +40,6 @@ Corner::Corner(Walls &_base)
 		}
 	}
 	m_MVs.resize(std::distance(m_MVs.begin(), it));
-//	for (auto i : m_MVs)
-//	{
-//		glm::vec3 scale(1.0f);
-//		glm::quat rotation;
-//		glm::vec3 translation(1.0f);
-//		glm::vec3 skew(1.0f);
-//		glm::vec4 perspective(1.0f);
-//		glm::mat4 p = i;
-//		glm::decompose(p,scale,rotation, translation, skew, perspective);
-//		std::cout << glm::to_string(translation) << '\n';
-//	}
 }
 
 void Corner::makeRotationTable()

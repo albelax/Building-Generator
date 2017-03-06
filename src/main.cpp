@@ -12,11 +12,11 @@
 #include <GL/glew.h>
 #define LINUX
 #endif
-
-
 #include <iostream>
 #include <SDL.h>
 #include <vector>
+#include <dirent.h>
+
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
@@ -92,10 +92,42 @@ int main()
 	mainCamera.setInitialMousePos(0,0);
 	// Needed for the fixed camera
 	mainCamera.setTarget(0.0f,0.0f,0.0f);
-	mainCamera.setEye(0.0f, 2.0f, -5.0f);
+	mainCamera.setEye(0.0f, 2.0f, 5.0f);
 
 	SDL_Event event;
 	bool quit = false;
+
+	std::vector<std::string> directories;
+	std::vector<std::string> files;
+	DIR *dir;
+	struct dirent *ent;
+	if ((dir = opendir ("models")) != NULL)
+	{
+		/* print all the files and directories within directory */
+		while ((ent = readdir (dir)) != NULL)
+		{
+			//std::cout << ent->d_name << '\n';
+			std::string name = (char*) ent->d_name;
+			bool isFile = false;
+			if (name.length() > 4 && name.substr((name.length()-4),name.length()) == ".obj")
+				isFile = true;
+			if (isFile)
+				files.push_back(ent->d_name);
+			else
+				directories.push_back(ent->d_name);
+		}
+		closedir (dir);
+	}
+
+	for(auto i : directories)
+	{
+		std::cout << "directory: " << i << '\n';
+	}
+
+	for(auto i : files)
+	{
+		std::cout << "files: " << i << '\n';
+	}
 
 	// main loop
 	while (quit != true)

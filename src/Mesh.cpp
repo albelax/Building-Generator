@@ -29,10 +29,10 @@ Mesh::Mesh(std::string _address, std::string _name)
 	m_maxY = 0;
 	m_maxZ = 0;
 
-//	m_vertices.resize(600);
-//	m_normals.resize(600);
-//	tempVertices.resize(600);
-//	tempNormals.resize(600);
+	m_vertices.resize(3600);
+	m_normals.resize(3600);
+	tempVertices.resize(3600);
+	tempNormals.resize(3600);
 
 	std::size_t i_tempVertices = 0;
 	std::size_t i_tempNormals = 0;
@@ -50,7 +50,7 @@ Mesh::Mesh(std::string _address, std::string _name)
 			{
 				if (i_tempVertices == tempVertices.size())
 				{
-						tempVertices.resize(tempVertices.size()+600);
+						tempVertices.resize(tempVertices.size()+3600);
 					//std::cout << "size " << tempVertices.size() << '\n';
 				}
 				tempVertices[i_tempVertices++] = std::stof(tempData[1]);
@@ -63,7 +63,7 @@ Mesh::Mesh(std::string _address, std::string _name)
 			{
 				if (i_tempNormals == tempNormals.size())
 				{
-					tempNormals.resize(tempNormals.size()+600);
+					tempNormals.resize(tempNormals.size()+3600);
 					//std::cout << "size " << tempNormals.size() << '\n';
 				}
 				tempNormals[i_tempNormals++] = std::stof(tempData[1]);
@@ -80,7 +80,7 @@ Mesh::Mesh(std::string _address, std::string _name)
 
 					if (iVertices == m_vertices.size())
 					{
-						m_vertices.resize(m_vertices.size()+600);
+						m_vertices.resize(m_vertices.size()+3600);
 					}
 					m_vertices[iVertices++] = tempVertices[(std::stoi(tempFaces[0])-1)*3];
 					m_vertices[iVertices++] = tempVertices[((std::stoi(tempFaces[0])-1)*3)+1];
@@ -88,7 +88,7 @@ Mesh::Mesh(std::string _address, std::string _name)
 
 					if (iNormals == m_normals.size())
 					{
-						m_normals.resize(m_normals.size()+600);
+						m_normals.resize(m_normals.size()+3600);
 					}
 					m_normals[iNormals++] = tempNormals[(std::stoi(tempFaces[2])-1)*3];
 					m_normals[iNormals++] = tempNormals[((std::stoi(tempFaces[2])-1)*3)+1];

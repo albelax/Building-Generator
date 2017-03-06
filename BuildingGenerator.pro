@@ -4,10 +4,12 @@ CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG+=opengl
 
+OBJECTS_DIR = ./obj
 INCLUDEPATH += $$PWD/include/
 INCLUDEPATH += $$PWD/models
 INCLUDEPATH += $$PWD/glm
 INCLUDEPATH += $$PWD/Shaders
+
 
 SOURCES += src/*
 HEADERS += include/*
@@ -24,9 +26,9 @@ Shaders/*
 
 #macx
 #{
-#macx:LIBS += -F/Library/Frameworks -framework SDL2
-#macx:INCLUDEPATH += /Library/Frameworks/SDL.framework/Headers
-#macx:INCLUDEPATH += /usr/local/include/SDL2
+macx:LIBS += -F/Library/Frameworks -framework SDL2
+macx:INCLUDEPATH += /Library/Frameworks/SDL.framework/Headers
+macx:INCLUDEPATH += /usr/local/include/SDL2
 #}
 
 QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
