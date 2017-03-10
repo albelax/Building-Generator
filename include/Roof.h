@@ -9,8 +9,11 @@ class Roof : public Object
 {
 public:
 	Roof();
-	Roof(Walls _base);
+	Roof(Object _walls, Object _corners);
 private:
 	void makeTranslationTable() override;
+	float round(float _in);
+	void sortEdges();
+	void fill();
 };
 #endif // ROOF_H

@@ -114,7 +114,17 @@ int main()
 			if (isFile)
 				files.push_back(ent->d_name);
 			else
-				directories.push_back(ent->d_name);
+			{
+				// ignore other files and folders containign the .
+				bool isDirectory = true;
+				for(auto i: name)
+				{
+					if(i == '.')
+						isDirectory = false;
+				}
+				if (isDirectory)
+					directories.push_back(ent->d_name);
+			}
 		}
 		closedir (dir);
 	}

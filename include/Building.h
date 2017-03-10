@@ -29,14 +29,16 @@ public:
 	void setBufferIndex(int _index) { m_bufferIndex = _index; }
 	int getBufferIndex() const { return m_bufferIndex; }
 private:
+	enum Floor {ALL, BOTTOM, TOP, NOT_BOTTOM };
 	/// rule that determines the shape of the base
 	std::string m_rule;
 	/// generating the rule that will make the walls
 	void generateBase();
-	void combinearrays(Mesh & _mesh, Object * _object);
+	void combinearrays(Mesh & _mesh, Object * _object, Floor _floor);
 	std::vector<float> m_vertices;
 	std::vector<float> m_normals;
 	int m_height;
+
 };
 
 #endif // BUILDING_H

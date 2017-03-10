@@ -1,93 +1,21 @@
 #include "Roof.h"
+#include <iostream>
+#include <iomanip>
 
 Roof::Roof()
 {
 
 }
 
-Roof::Roof(Walls _base)
+Roof::Roof(Object _walls, Object _corners)
 {
-//	m_MVs.resize(_base.getMVs().size());
-	// one way to approach the creation of  the roof could be
-	// by taking all the mvs of the walls and organize them in a 2d array
-	// sorting them by x values, so we will end up with a 2d array where all the sub array have the same x
-	// this way I can fill the gap between the walls
-	// this method will give me some problem since it's a naive approach but I can expand from there
-
-
-	float min_x = 10000;
-	float min_z = 10000;
-	float max_x = -10000;
-	float max_z = -10000;
-
-	for (auto mv : _base.getMVs())
+	m_MVs = _walls.getMVs();
+	for (auto m : _corners.getMVs())
 	{
-		glm::vec3 mv_scale(1.0f);
-		glm::quat mv_rotation;
-		glm::vec3 mv_translation(1.0f);
-		glm::vec3 mv_skew(1.0f);
-		glm::vec4 mv_perspective(1.0f);
-		glm::decompose(mv, mv_scale, mv_rotation, mv_translation, mv_skew, mv_perspective);
-
-//		(*it++) = glm::translate(mv, glm::vec3(0,1,0));
-		min_x = mv_translation.x < min_x ? mv_translation.x : min_x;
-		min_z = mv_translation.z < min_z ? mv_translation.z : min_z;
-		max_x = mv_translation.x > max_x ? mv_translation.x : max_x;
-		max_z = mv_translation.z > max_z ? mv_translation.z : max_z;
+		m_MVs.push_back(m);
 	}
-//	std::cout << "min: " << min_x << " - " << min_z << "\nmax: " << max_x << " - " << max_z << '\n';
-
-	for(int z = 0; min_z + z <= max_z + 1; ++z)
-	{
-		for (int x = 0; min_x + x <= max_x + 1; ++x)
-		{
-//				if (z == 0)
-//				{
-				glm::mat4 currentBlock = glm::translate(glm::mat4(1.0f), glm::vec3(min_x + x, 1, min_z + z));
-				m_MVs.push_back(currentBlock);
-//				}
-		}
-	}
-
-	float base_x;
-	float base_z;
-
-	std::vector<glm::mat4>::iterator it = m_MVs.begin();
-	for (it = m_MVs.begin(); it != m_MVs.end(); ++it)
-	{
-		glm::vec3 mv_scale(1.0f);
-		glm::quat mv_rotation;
-		glm::vec3 mv_translation(1.0f);
-		glm::vec3 mv_skew(1.0f);
-		glm::vec4 mv_perspective(1.0f);
-		glm::decompose((*it), mv_scale, mv_rotation, mv_translation, mv_skew, mv_perspective);
-		int smallerThan = 0;
-		for (auto base_mv : _base.getMVs())
-		{
-				glm::vec3 base_mv_scale(1.0f);
-				glm::quat base_mv_rotation;
-				glm::vec3 base_mv_translation(1.0f);
-				glm::vec3 base_mv_skew(1.0f);
-				glm::vec4 base_mv_perspective(1.0f);
-				glm::decompose(base_mv, mv_scale, mv_rotation, base_mv_translation, mv_skew, mv_perspective);
-
-				if (base_mv_translation.x > mv_translation.x && base_mv_translation.z == mv_translation.z)
-				{
-//					std::cout << "base x: " << base_mv_translation.x << " z: " << base_mv_translation.z;
-//					std::cout << " roof x: " << mv_translation.x << " z: " << base_mv_translation.z << "\n";
-						base_x = base_mv_translation.x;
-						base_z = base_mv_translation.z;
-					++smallerThan;
-				}
-		}
-		if(smallerThan % 2 == 0 && smallerThan != 0)
-		{
-//			std::cout << "base x: " << base_mv_translation.x << " z: " << base_mv_translation.z;
-			std::cout << " roof x: " << mv_translation.x << " z: " << mv_translation.z;// << "\n";
-			std::cout << " base x: " << base_x << " z: " << base_z << "\n";
-			m_MVs.erase(it);
-		}
-	}
+	sortEdges();
+	fill();
 }
 
 
@@ -100,4 +28,132 @@ void Roof::makeTranslationTable()
 	{0,0,0,0}, // l
 	{0,0,0,0}	 // d
 	};
+}
+
+float Roof::round(float _in)
+{
+	int integerPart = trunc(_in);
+	float decimalPart = _in - integerPart;
+	if (fabs(decimalPart) < 0.3f )
+	decimalPart = 0;
+	else if (fabs(decimalPart) > 0.3f && fabs(decimalPart) < 0.6f)
+		decimalPart = 0.5f;
+	else decimalPart = 1;
+	decimalPart = _in > 0 ? decimalPart : -decimalPart;
+	return integerPart + decimalPart;
+}
+
+
+void Roof::sortEdges()
+{
+	std::vector<glm::mat4> matrices;
+	for (unsigned int i = 0; i < m_MVs.size(); ++i)
+	{
+		glm::vec3 mv_scale(1.0f);
+		glm::quat mv_rotation;
+		glm::vec3 mv_translation(1.0f);
+		glm::vec3 mv_skew(1.0f);
+		glm::vec4 mv_perspective(1.0f);
+		glm::decompose(m_MVs[i], mv_scale, mv_rotation, mv_translation, mv_skew, mv_perspective);
+		// sort matrices by Z
+		bool isIn = false;
+		for (auto m : matrices)
+		{
+			if (m_MVs[i] == m)
+				isIn = true;
+		}
+		if (!isIn)
+		{
+			matrices.push_back(m_MVs[i]);
+		}
+		for (unsigned int j = i+1; j < m_MVs.size(); ++j)
+		{
+			glm::vec3 j_scale(1.0f);
+			glm::quat j_rotation;
+			glm::vec3 j_translation(1.0f);
+			glm::vec3 j_skew(1.0f);
+			glm::vec4 j_perspective(1.0f);
+			glm::decompose(m_MVs[j], j_scale, j_rotation, j_translation, j_skew, j_perspective);
+
+			if (Roof::round(mv_translation.z) == Roof::round(j_translation.z) && Roof::round(mv_translation.x) != Roof::round(j_translation.x) )
+			{
+				isIn = false;
+				for (auto m : matrices)
+				{
+					if (m_MVs[j] == m)
+						isIn = true;
+				}
+				if (!isIn)
+				{
+					matrices.push_back(m_MVs[j]);
+				}
+			}
+		}
+	}
+	m_MVs = matrices;
+	matrices.clear();
+
+	// sort by X
+	for (unsigned int i = 0; i < m_MVs.size(); ++i)
+	{
+		glm::vec3 i_scale(1.0f);
+		glm::quat i_rotation;
+		glm::vec3 i_translation(1.0f);
+		glm::vec3 i_skew(1.0f);
+		glm::vec4 i_perspective(1.0f);
+		glm::decompose(m_MVs[i], i_scale, i_rotation, i_translation, i_skew, i_perspective);
+
+		for (unsigned int j = 0; j < m_MVs.size(); ++j)
+		{
+			glm::vec3 j_scale(1.0f);
+			glm::quat j_rotation;
+			glm::vec3 j_translation(1.0f);
+			glm::vec3 j_skew(1.0f);
+			glm::vec4 j_perspective(1.0f);
+			glm::decompose(m_MVs[j], j_scale, j_rotation, j_translation, j_skew, j_perspective);
+			if ( Roof::round(i_translation.z) == Roof::round(j_translation.z) && Roof::round(i_translation.x) > Roof::round(j_translation.x) && i < j)
+			{
+					glm::mat4 tmp = m_MVs[i];
+					m_MVs[i] = m_MVs[j];
+					m_MVs[j] = tmp;
+			}
+		}
+	}
+}
+
+void Roof::fill()
+{
+	std::vector<glm::mat4> matrices;
+	for( unsigned int i = 0; i < m_MVs.size(); ++i)
+	{
+		if (i == 0 || m_MVs[i] != m_MVs[i-1])
+			matrices.push_back(m_MVs[i]);
+		glm::mat4 tmp = m_MVs[i];
+
+		glm::vec3 it_scale(1.0f);
+		glm::quat it_rotation;
+		glm::vec3 it_translation(1.0f);
+		glm::vec3 it_skew(1.0f);
+		glm::vec4 it_perspective(1.0f);
+		glm::decompose(m_MVs[i], it_scale, it_rotation, it_translation, it_skew, it_perspective);
+
+		glm::vec3 next_scale(1.0f);
+		glm::quat next_rotation;
+		glm::vec3 next_translation(1.0f);
+		glm::vec3 next_skew(1.0f);
+		glm::vec4 next_perspective(1.0f);
+		glm::decompose(m_MVs[i+1], next_scale, next_rotation, next_translation, next_skew, next_perspective);
+		std::cout << "x: " << Roof::round(it_translation.x) <<  " z: " << Roof::round(it_translation.z) << "\n";
+
+		// fill interpolating in X
+		while(Roof::round(it_translation.z) == Roof::round(next_translation.z) && Roof::round(it_translation.x+1) < Roof::round(next_translation.x))
+		{
+			it_translation.x += 1.0f;
+			tmp = glm::translate(glm::mat4(1.0f), it_translation);
+			std::cout << "tmp x: " << Roof::round(it_translation.x) <<  " tmp z: " << Roof::round(it_translation.z) << "\n";
+			matrices.push_back(tmp);
+		}
+	}
+
+	m_MVs = matrices;
 }
