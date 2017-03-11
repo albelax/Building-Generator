@@ -143,17 +143,22 @@ void Roof::fill()
 		glm::vec3 next_skew(1.0f);
 		glm::vec4 next_perspective(1.0f);
 		glm::decompose(m_MVs[i+1], next_scale, next_rotation, next_translation, next_skew, next_perspective);
-		std::cout << "x: " << Roof::round(it_translation.x) <<  " z: " << Roof::round(it_translation.z) << "\n";
 
 		// fill interpolating in X
+//		while ( Roof::isNearlyEqual(it_translation.x, next_translation.z, 0.3f) && Roof::round(it_translation.x+1) < Roof::round(next_translation.x));
 		while(Roof::round(it_translation.z) == Roof::round(next_translation.z) && Roof::round(it_translation.x+1) < Roof::round(next_translation.x))
 		{
 			it_translation.x += 1.0f;
 			tmp = glm::translate(glm::mat4(1.0f), it_translation);
-			std::cout << "tmp x: " << Roof::round(it_translation.x) <<  " tmp z: " << Roof::round(it_translation.z) << "\n";
 			matrices.push_back(tmp);
 		}
 	}
 
 	m_MVs = matrices;
+}
+
+
+bool Roof::isNearlyEqual(float a, float b, float error_margin)
+{
+	return (fabs(fabs(a) - fabs(b)) < error_margin);
 }

@@ -15,5 +15,6 @@ private:
 	float round(float _in);
 	void sortEdges();
 	void fill();
+	bool isNearlyEqual(float a, float b, float error_margin = 0.0003f);
 };
 #endif // ROOF_H

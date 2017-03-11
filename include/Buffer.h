@@ -18,6 +18,7 @@ public:
 	Buffer() = delete; // makes sure that the compiler doesn't generate a default constructor
 	Buffer(const int _size, int _sizeOfData);
 	int append(void * _address, int size, BufferType _type);
+	void clear(const int _size, int _sizeOfData);
 private:
 	GLuint m_vao;
 	GLuint m_vertexBuffer;

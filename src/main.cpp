@@ -97,48 +97,6 @@ int main()
 	SDL_Event event;
 	bool quit = false;
 
-	std::vector<std::string> directories;
-	std::vector<std::string> files;
-	DIR *dir;
-	struct dirent *ent;
-	if ((dir = opendir ("models")) != NULL)
-	{
-		/* print all the files and directories within directory */
-		while ((ent = readdir (dir)) != NULL)
-		{
-			//std::cout << ent->d_name << '\n';
-			std::string name = (char*) ent->d_name;
-			bool isFile = false;
-			if (name.length() > 4 && name.substr((name.length()-4),name.length()) == ".obj")
-				isFile = true;
-			if (isFile)
-				files.push_back(ent->d_name);
-			else
-			{
-				// ignore other files and folders containign the .
-				bool isDirectory = true;
-				for(auto i: name)
-				{
-					if(i == '.')
-						isDirectory = false;
-				}
-				if (isDirectory)
-					directories.push_back(ent->d_name);
-			}
-		}
-		closedir (dir);
-	}
-
-	for(auto i : directories)
-	{
-		std::cout << "directory: " << i << '\n';
-	}
-
-	for(auto i : files)
-	{
-		std::cout << "files: " << i << '\n';
-	}
-
 	// main loop
 	while (quit != true)
 	{
@@ -146,25 +104,27 @@ int main()
 
 		while (SDL_PollEvent(&event))
 		{
-			if (event.type == SDL_QUIT) // || event.key.keysym.sym == SDLK_ESCAPE)
-				quit = true;
-
-			if (event.type == SDL_WINDOWEVENT)
+			switch (event.type)
 			{
-				SDL_GetWindowSize(mainWindow.getWindow(), &width, &height);
-				mainWindow.setWindowSize(width, height);
+				case SDL_QUIT: quit = true; break;
+				case SDL_WINDOWEVENT:
+					SDL_GetWindowSize(mainWindow.getWindow(), &width, &height);
+					mainWindow.setWindowSize(width, height);
+					glViewport(0,0,width, height);
+					projection = glm::perspective(glm::radians(60.0f),
+					static_cast<float>(mainWindow.getWidth())/static_cast<float>(mainWindow.getHeight()), 0.1f, 100.0f);
+					break;
 
-				glViewport(0,0,width, height);
-				projection = glm::perspective(glm::radians(60.0f),
-				static_cast<float>(mainWindow.getWidth())/static_cast<float>(mainWindow.getHeight()),
-				0.1f, 100.0f);
+				default: break;
+			}
+			switch(event.key.keysym.sym)
+			{
+				case SDLK_ESCAPE: quit = true; break;
 			}
 
-			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
-				mainCamera.handleMouseClick(event.button.x, event.button.y, event.button.button, event.type, 0);
+			mainCamera.handleMouseClick(event.button.x, event.button.y, event.button.button, event.type, 0);
 			mainCamera.handleMouseMove(event.button.x, event.button.y);
 		}
-
 		mainCamera.update();
 		glClearColor(1.0f,1.0f,1.0f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -174,7 +134,7 @@ int main()
 		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
-		glDrawArrays(GL_TRIANGLES, 0, building.amountVertices()/3);
+		glDrawArrays(GL_TRIANGLES, building.getBufferIndex()/3, building.amountVertices()/3);
 
 		SDL_GL_SwapWindow(mainWindow.getWindow());
 	}

@@ -50,3 +50,4 @@ int Buffer::append(void *_address, int size, BufferType _type)
 	glBufferSubData(GL_ARRAY_BUFFER, tmp_index * m_sizeOfData, size * m_sizeOfData, _address);
 	return tmp_index; // return the index of the current element
 }
+
