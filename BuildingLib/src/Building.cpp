@@ -146,7 +146,8 @@ void Building::create()
 	Roof m_roof = Roof(m_walls, m_walls);
 	Mesh m_wall_mesh = Mesh("models/my_Building/Walls/Plane.obj", "wall");
 	Mesh m_corner_mesh = Mesh("models/my_Building/Corners/b_oriented_cut_corner.obj", "corner");
-	Mesh m_roof_mesh = Mesh("models/my_Building/Roofs/roof_edge.obj", "cube");
+	Mesh m_roof_mesh = Mesh("models/my_Building/Roofs/cube.obj", "cube");
+	Mesh m_roofEdges_mesh = Mesh("models/my_Building/Roofs/Roof_edge.obj", "roofEdge");
 //	Mesh m_decoration = Mesh("models/new_Building/Decorations/deco.obj", "deco");
 //	Mesh m_window = Mesh("models/my_Building/Windows/window.obj", "win");
 	Mesh m_decoration = Mesh(selectFolder(X, element::DECORATION), "deco");
@@ -154,14 +155,16 @@ void Building::create()
 	unsigned int walls_size = m_wall_mesh.getAmountVertexData() * m_walls.getMVs().size();
 	unsigned int corners_size = m_corner_mesh.getAmountVertexData() * m_corners.getMVs().size();
 	unsigned int roof_size = m_roof_mesh.getAmountVertexData() * m_roof.getMVs().size();
+	unsigned int roofEdges_size = m_roofEdges_mesh.getAmountVertexData() * m_walls.getMVs().size();
 	unsigned int deco_size = m_decoration.getAmountVertexData() * m_walls.getMVs().size();
 	unsigned int window_size = m_window.getAmountVertexData() * m_walls.getMVs().size();
 
-	m_vertices.resize( (walls_size + corners_size + deco_size + window_size)*m_height + roof_size);
-	m_normals.resize( (walls_size + corners_size + deco_size + window_size)*m_height + roof_size);
+	m_vertices.resize( (walls_size + corners_size + deco_size + window_size)*m_height + roof_size + roofEdges_size);
+	m_normals.resize( (walls_size + corners_size + deco_size + window_size)*m_height + roof_size + roofEdges_size);
 	combinearrays(m_wall_mesh, dynamic_cast<Object*>(&m_walls), Floor::ALL);
 	combinearrays(m_corner_mesh, dynamic_cast<Object*>(&m_corners), Floor::ALL);
 	combinearrays(m_decoration, dynamic_cast<Object*>(&m_walls), Floor::NOT_BOTTOM);
 	combinearrays(m_window, dynamic_cast<Object*>(&m_walls), Floor::NOT_BOTTOM);
-	combinearrays(m_roof_mesh, dynamic_cast<Object*>(&m_roof), Floor::TOP); // place the roof only at the edges
+	combinearrays(m_roof_mesh, dynamic_cast<Object*>(&m_roof), Floor::TOP); // fills the roof
+	combinearrays(m_roofEdges_mesh, dynamic_cast<Object*>(&m_walls), Floor::TOP); // place the roof only at the edges
 }

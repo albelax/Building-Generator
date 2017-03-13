@@ -9,6 +9,7 @@ Roof::Roof()
 
 Roof::Roof(Object _walls, Object _corners)
 {
+	std::vector<glm::mat4> tmp = _walls.getMVs();
 	m_MVs = _walls.getMVs();
 	for (auto m : _corners.getMVs())
 	{
@@ -16,6 +17,35 @@ Roof::Roof(Object _walls, Object _corners)
 	}
 	sortEdges();
 	fill();
+
+	for (unsigned int i = 0; i < m_MVs.size(); ++i)
+	{
+		glm::vec3 i_scale(1.0f);
+		glm::quat i_rotation;
+		glm::vec3 i_translation(1.0f);
+		glm::vec3 i_skew(1.0f);
+		glm::vec4 i_perspective(1.0f);
+		glm::decompose(m_MVs[i], i_scale, i_rotation, i_translation, i_skew, i_perspective);
+
+		for (unsigned int j = 0; j < tmp.size(); ++j)
+		{
+			glm::vec3 j_scale(1.0f);
+			glm::quat j_rotation;
+			glm::vec3 j_translation(1.0f);
+			glm::vec3 j_skew(1.0f);
+			glm::vec4 j_perspective(1.0f);
+			glm::decompose(tmp[j], j_scale, j_rotation, j_translation, j_skew, j_perspective);
+
+			if ( Roof::round(i_translation.x) == Roof::round(j_translation.x)
+			     &&  Roof::round(i_translation.z) == Roof::round(j_translation.z))
+			{
+//					std::cout << i_translation.x << " z: " << i_translation.z << "\n";
+					m_MVs.erase(m_MVs.begin()+i);
+					--i;
+			}
+		}
+	}
+
 }
 
 
