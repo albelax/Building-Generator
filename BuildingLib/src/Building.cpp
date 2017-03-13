@@ -146,7 +146,7 @@ void Building::create()
 	Roof m_roof = Roof(m_walls, m_walls);
 	Mesh m_wall_mesh = Mesh("models/my_Building/Walls/Plane.obj", "wall");
 	Mesh m_corner_mesh = Mesh("models/my_Building/Corners/b_oriented_cut_corner.obj", "corner");
-	Mesh m_roof_mesh = Mesh("models/my_Building/Roofs/cube.obj", "cube");
+	Mesh m_roof_mesh = Mesh("models/my_Building/Roofs/roof_edge.obj", "cube");
 //	Mesh m_decoration = Mesh("models/new_Building/Decorations/deco.obj", "deco");
 //	Mesh m_window = Mesh("models/my_Building/Windows/window.obj", "win");
 	Mesh m_decoration = Mesh(selectFolder(X, element::DECORATION), "deco");
@@ -163,5 +163,5 @@ void Building::create()
 	combinearrays(m_corner_mesh, dynamic_cast<Object*>(&m_corners), Floor::ALL);
 	combinearrays(m_decoration, dynamic_cast<Object*>(&m_walls), Floor::NOT_BOTTOM);
 	combinearrays(m_window, dynamic_cast<Object*>(&m_walls), Floor::NOT_BOTTOM);
-	combinearrays(m_roof_mesh, dynamic_cast<Object*>(&m_roof), Floor::TOP);
+	combinearrays(m_roof_mesh, dynamic_cast<Object*>(&m_roof), Floor::TOP); // place the roof only at the edges
 }

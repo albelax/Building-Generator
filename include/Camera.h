@@ -8,7 +8,7 @@
 #include <math.h>
 
 // Needed for SDL output
-#include <SDL.h> // used instead of glfw
+#include<SDL.h> // used instead of glfw
 
 // Needed for matrix operations
 #include <glm/glm.hpp>

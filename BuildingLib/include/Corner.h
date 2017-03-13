@@ -7,7 +7,7 @@
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
-#include "glm/ext.hpp"
+#include "ext.hpp"
 #include "Walls.h"
 #include "Object.h"
 

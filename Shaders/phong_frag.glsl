@@ -18,12 +18,18 @@ struct LightInfo
 
 // We'll have a single light in the scene with some default values
 uniform LightInfo Light = LightInfo(
-            vec4(2.0, 2.0, 10.0, 1.0),   // position
+						vec4(2.0, 20.0, 10.0, 1.0),   // position
             vec3(0.2, 0.2, 0.2),        // La
             vec3(1.0, 1.0, 1.0),        // Ld
             vec3(1.0, 1.0, 1.0)         // Ls
             );
 
+uniform LightInfo Light_2 = LightInfo(
+						vec4(-20.0, 20.0, 10.0, 1.0),   // position
+						vec3(0.2, 0.2, 0.2),        // La
+						vec3(1.0, 1.0, 1.0),        // Ld
+						vec3(1.0, 1.0, 1.0)         // Ls
+						);
 
 
 /* material copied from vert */
@@ -51,7 +57,7 @@ void main()
     vec3 n = normalize( FragmentNormal );
 
     // Calculate the light vector
-    vec3 s = normalize( vec3(Light.Position) - FragmentPosition);
+		vec3 s = normalize( vec3(Light.Position) + vec3(Light_2.Position) - FragmentPosition);
 
     // Calculate the vertex position
     vec3 v = normalize(-vec3(FragmentPosition));
@@ -67,5 +73,5 @@ void main()
 
 
     // Set the output color of our current pixel
-	 FragColor = vec4(LightIntensity * vec3(0.25,0.53,0.7),1.0);
+	 FragColor = vec4(LightIntensity * vec3(1,1,1),1.0);
 }

@@ -104,6 +104,10 @@ int main()
 
 		while (SDL_PollEvent(&event))
 		{
+			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
+				mainCamera.handleMouseClick(event.button.x, event.button.y, event.button.button, event.type, 0);
+			mainCamera.handleMouseMove(event.button.x, event.button.y);
+
 			switch (event.type)
 			{
 				case SDL_QUIT: quit = true; break;
@@ -114,19 +118,17 @@ int main()
 					projection = glm::perspective(glm::radians(60.0f),
 					static_cast<float>(mainWindow.getWidth())/static_cast<float>(mainWindow.getHeight()), 0.1f, 100.0f);
 					break;
-
 				default: break;
 			}
-			switch(event.key.keysym.sym)
-			{
-				case SDLK_ESCAPE: quit = true; break;
-			}
+//			mainCamera.handleMouseMove(event.button.x, event.button.y);
+//			switch(event.key.keysym.sym)
+//			{
+//				case SDLK_ESCAPE: quit = true; break;
+//			}
 
-			mainCamera.handleMouseClick(event.button.x, event.button.y, event.button.button, event.type, 0);
-			mainCamera.handleMouseMove(event.button.x, event.button.y);
 		}
 		mainCamera.update();
-		glClearColor(1.0f,1.0f,1.0f,1.0f);
+		glClearColor(0.36f,0.36f,0.36f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		MVP = projection * mainCamera.viewMatrix() * glm::mat4(1.0f);

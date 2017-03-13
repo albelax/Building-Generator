@@ -7,10 +7,10 @@
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
-#include "glm/gtx/rotate_vector.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/ext.hpp"
-#include "glm/gtx/matrix_decompose.hpp"
+#include "gtx/rotate_vector.hpp"
+#include "gtc/type_ptr.hpp"
+#include "ext.hpp"
+#include "gtx/matrix_decompose.hpp"
 
 class Object
 {
