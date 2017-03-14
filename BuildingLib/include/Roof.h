@@ -9,7 +9,7 @@ class Roof : public Object
 {
 public:
 	Roof();
-	Roof(Object _walls, Object _corners);
+	Roof(Object &_walls, Object &_corners);
 private:
 	void makeTranslationTable() override;
 	float round(float _in);

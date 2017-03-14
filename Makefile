@@ -15,7 +15,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 DEFINES       = -DQT_QML_DEBUG
 CFLAGS        = -pipe -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -g -Wall -W -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -stdlib=libc++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -I/usr/local/include/SDL2 -D_THREAD_SAFE -g -std=gnu++11 -Wall -W -fPIC $(DEFINES)
-INCPATH       = -I. -Iinclude -Imodels -Iglm -IShaders -IBuildingLib/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I../Qt/5.8/clang_64/mkspecs/macx-clang
+INCPATH       = -I. -Iinclude -Imodels -Iglm -IShaders -I/Library/Frameworks/SDL.framework/Headers -I/usr/local/include/SDL2 -I/usr/local/include/SDL2 -IBuildingLib/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I../Qt/5.8/clang_64/mkspecs/macx-clang
 QMAKE         = /Users/albertolascala/Qt/5.8/clang_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -36,7 +36,7 @@ DISTNAME      = BuildingGenerator1.0.0
 DISTDIR = /Users/albertolascala/Building-Generator/obj/BuildingGenerator1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -headerpad_max_install_names -stdlib=libc++ -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_LFLAGS)
-LIBS          = $(SUBLIBS) -L/usr/local/lib -lSDL2 -L /Users/albertolascala/Building-Generator/BuildingLib/lib -lBuildingLib -framework OpenGL -lGLEW -framework AGL 
+LIBS          = $(SUBLIBS) -F/Library/Frameworks -framework SDL2 -L/usr/local/lib -lSDL2 -L /Users/albertolascala/Building-Generator/BuildingLib/lib -lBuildingLib -framework OpenGL -framework AGL 
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
 SED           = sed
@@ -642,6 +642,49 @@ obj/Buffer.o: src/Buffer.cpp include/Buffer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Buffer.o src/Buffer.cpp
 
 obj/Camera.o: src/Camera.cpp include/Camera.h \
+		/usr/local/include/SDL2/SDL.h \
+		/usr/local/include/SDL2/SDL_main.h \
+		/usr/local/include/SDL2/SDL_stdinc.h \
+		/usr/local/include/SDL2/SDL_config.h \
+		/usr/local/include/SDL2/SDL_platform.h \
+		/usr/local/include/SDL2/begin_code.h \
+		/usr/local/include/SDL2/close_code.h \
+		/usr/local/include/SDL2/SDL_assert.h \
+		/usr/local/include/SDL2/SDL_atomic.h \
+		/usr/local/include/SDL2/SDL_audio.h \
+		/usr/local/include/SDL2/SDL_error.h \
+		/usr/local/include/SDL2/SDL_endian.h \
+		/usr/local/include/SDL2/SDL_mutex.h \
+		/usr/local/include/SDL2/SDL_thread.h \
+		/usr/local/include/SDL2/SDL_rwops.h \
+		/usr/local/include/SDL2/SDL_clipboard.h \
+		/usr/local/include/SDL2/SDL_cpuinfo.h \
+		/usr/local/include/SDL2/SDL_events.h \
+		/usr/local/include/SDL2/SDL_video.h \
+		/usr/local/include/SDL2/SDL_pixels.h \
+		/usr/local/include/SDL2/SDL_rect.h \
+		/usr/local/include/SDL2/SDL_surface.h \
+		/usr/local/include/SDL2/SDL_blendmode.h \
+		/usr/local/include/SDL2/SDL_keyboard.h \
+		/usr/local/include/SDL2/SDL_keycode.h \
+		/usr/local/include/SDL2/SDL_scancode.h \
+		/usr/local/include/SDL2/SDL_mouse.h \
+		/usr/local/include/SDL2/SDL_joystick.h \
+		/usr/local/include/SDL2/SDL_gamecontroller.h \
+		/usr/local/include/SDL2/SDL_quit.h \
+		/usr/local/include/SDL2/SDL_gesture.h \
+		/usr/local/include/SDL2/SDL_touch.h \
+		/usr/local/include/SDL2/SDL_filesystem.h \
+		/usr/local/include/SDL2/SDL_haptic.h \
+		/usr/local/include/SDL2/SDL_hints.h \
+		/usr/local/include/SDL2/SDL_loadso.h \
+		/usr/local/include/SDL2/SDL_log.h \
+		/usr/local/include/SDL2/SDL_messagebox.h \
+		/usr/local/include/SDL2/SDL_power.h \
+		/usr/local/include/SDL2/SDL_render.h \
+		/usr/local/include/SDL2/SDL_system.h \
+		/usr/local/include/SDL2/SDL_timer.h \
+		/usr/local/include/SDL2/SDL_version.h \
 		glm/glm.hpp \
 		glm/detail/_fixes.hpp \
 		glm/fwd.hpp \
@@ -751,7 +794,50 @@ obj/Camera.o: src/Camera.cpp include/Camera.h \
 		glm/gtx/string_cast.inl
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Camera.o src/Camera.cpp
 
-obj/main.o: src/main.cpp glm/glm.hpp \
+obj/main.o: src/main.cpp /usr/local/include/SDL2/SDL.h \
+		/usr/local/include/SDL2/SDL_main.h \
+		/usr/local/include/SDL2/SDL_stdinc.h \
+		/usr/local/include/SDL2/SDL_config.h \
+		/usr/local/include/SDL2/SDL_platform.h \
+		/usr/local/include/SDL2/begin_code.h \
+		/usr/local/include/SDL2/close_code.h \
+		/usr/local/include/SDL2/SDL_assert.h \
+		/usr/local/include/SDL2/SDL_atomic.h \
+		/usr/local/include/SDL2/SDL_audio.h \
+		/usr/local/include/SDL2/SDL_error.h \
+		/usr/local/include/SDL2/SDL_endian.h \
+		/usr/local/include/SDL2/SDL_mutex.h \
+		/usr/local/include/SDL2/SDL_thread.h \
+		/usr/local/include/SDL2/SDL_rwops.h \
+		/usr/local/include/SDL2/SDL_clipboard.h \
+		/usr/local/include/SDL2/SDL_cpuinfo.h \
+		/usr/local/include/SDL2/SDL_events.h \
+		/usr/local/include/SDL2/SDL_video.h \
+		/usr/local/include/SDL2/SDL_pixels.h \
+		/usr/local/include/SDL2/SDL_rect.h \
+		/usr/local/include/SDL2/SDL_surface.h \
+		/usr/local/include/SDL2/SDL_blendmode.h \
+		/usr/local/include/SDL2/SDL_keyboard.h \
+		/usr/local/include/SDL2/SDL_keycode.h \
+		/usr/local/include/SDL2/SDL_scancode.h \
+		/usr/local/include/SDL2/SDL_mouse.h \
+		/usr/local/include/SDL2/SDL_joystick.h \
+		/usr/local/include/SDL2/SDL_gamecontroller.h \
+		/usr/local/include/SDL2/SDL_quit.h \
+		/usr/local/include/SDL2/SDL_gesture.h \
+		/usr/local/include/SDL2/SDL_touch.h \
+		/usr/local/include/SDL2/SDL_filesystem.h \
+		/usr/local/include/SDL2/SDL_haptic.h \
+		/usr/local/include/SDL2/SDL_hints.h \
+		/usr/local/include/SDL2/SDL_loadso.h \
+		/usr/local/include/SDL2/SDL_log.h \
+		/usr/local/include/SDL2/SDL_messagebox.h \
+		/usr/local/include/SDL2/SDL_power.h \
+		/usr/local/include/SDL2/SDL_render.h \
+		/usr/local/include/SDL2/SDL_system.h \
+		/usr/local/include/SDL2/SDL_timer.h \
+		/usr/local/include/SDL2/SDL_version.h \
+		glm/glm.hpp \
 		glm/detail/_fixes.hpp \
 		glm/fwd.hpp \
 		glm/detail/type_int.hpp \
@@ -996,6 +1082,49 @@ obj/Shader.o: src/Shader.cpp include/Shader.h
 
 obj/TrackballCamera.o: src/TrackballCamera.cpp include/TrackballCamera.h \
 		include/Camera.h \
+		/usr/local/include/SDL2/SDL.h \
+		/usr/local/include/SDL2/SDL_main.h \
+		/usr/local/include/SDL2/SDL_stdinc.h \
+		/usr/local/include/SDL2/SDL_config.h \
+		/usr/local/include/SDL2/SDL_platform.h \
+		/usr/local/include/SDL2/begin_code.h \
+		/usr/local/include/SDL2/close_code.h \
+		/usr/local/include/SDL2/SDL_assert.h \
+		/usr/local/include/SDL2/SDL_atomic.h \
+		/usr/local/include/SDL2/SDL_audio.h \
+		/usr/local/include/SDL2/SDL_error.h \
+		/usr/local/include/SDL2/SDL_endian.h \
+		/usr/local/include/SDL2/SDL_mutex.h \
+		/usr/local/include/SDL2/SDL_thread.h \
+		/usr/local/include/SDL2/SDL_rwops.h \
+		/usr/local/include/SDL2/SDL_clipboard.h \
+		/usr/local/include/SDL2/SDL_cpuinfo.h \
+		/usr/local/include/SDL2/SDL_events.h \
+		/usr/local/include/SDL2/SDL_video.h \
+		/usr/local/include/SDL2/SDL_pixels.h \
+		/usr/local/include/SDL2/SDL_rect.h \
+		/usr/local/include/SDL2/SDL_surface.h \
+		/usr/local/include/SDL2/SDL_blendmode.h \
+		/usr/local/include/SDL2/SDL_keyboard.h \
+		/usr/local/include/SDL2/SDL_keycode.h \
+		/usr/local/include/SDL2/SDL_scancode.h \
+		/usr/local/include/SDL2/SDL_mouse.h \
+		/usr/local/include/SDL2/SDL_joystick.h \
+		/usr/local/include/SDL2/SDL_gamecontroller.h \
+		/usr/local/include/SDL2/SDL_quit.h \
+		/usr/local/include/SDL2/SDL_gesture.h \
+		/usr/local/include/SDL2/SDL_touch.h \
+		/usr/local/include/SDL2/SDL_filesystem.h \
+		/usr/local/include/SDL2/SDL_haptic.h \
+		/usr/local/include/SDL2/SDL_hints.h \
+		/usr/local/include/SDL2/SDL_loadso.h \
+		/usr/local/include/SDL2/SDL_log.h \
+		/usr/local/include/SDL2/SDL_messagebox.h \
+		/usr/local/include/SDL2/SDL_power.h \
+		/usr/local/include/SDL2/SDL_render.h \
+		/usr/local/include/SDL2/SDL_system.h \
+		/usr/local/include/SDL2/SDL_timer.h \
+		/usr/local/include/SDL2/SDL_version.h \
 		glm/glm.hpp \
 		glm/detail/_fixes.hpp \
 		glm/fwd.hpp \
@@ -1108,7 +1237,50 @@ obj/TrackballCamera.o: src/TrackballCamera.cpp include/TrackballCamera.h \
 		glm/gtx/norm.inl
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/TrackballCamera.o src/TrackballCamera.cpp
 
-obj/Window.o: src/Window.cpp include/Window.h
+obj/Window.o: src/Window.cpp include/Window.h \
+		/usr/local/include/SDL2/SDL.h \
+		/usr/local/include/SDL2/SDL_main.h \
+		/usr/local/include/SDL2/SDL_stdinc.h \
+		/usr/local/include/SDL2/SDL_config.h \
+		/usr/local/include/SDL2/SDL_platform.h \
+		/usr/local/include/SDL2/begin_code.h \
+		/usr/local/include/SDL2/close_code.h \
+		/usr/local/include/SDL2/SDL_assert.h \
+		/usr/local/include/SDL2/SDL_atomic.h \
+		/usr/local/include/SDL2/SDL_audio.h \
+		/usr/local/include/SDL2/SDL_error.h \
+		/usr/local/include/SDL2/SDL_endian.h \
+		/usr/local/include/SDL2/SDL_mutex.h \
+		/usr/local/include/SDL2/SDL_thread.h \
+		/usr/local/include/SDL2/SDL_rwops.h \
+		/usr/local/include/SDL2/SDL_clipboard.h \
+		/usr/local/include/SDL2/SDL_cpuinfo.h \
+		/usr/local/include/SDL2/SDL_events.h \
+		/usr/local/include/SDL2/SDL_video.h \
+		/usr/local/include/SDL2/SDL_pixels.h \
+		/usr/local/include/SDL2/SDL_rect.h \
+		/usr/local/include/SDL2/SDL_surface.h \
+		/usr/local/include/SDL2/SDL_blendmode.h \
+		/usr/local/include/SDL2/SDL_keyboard.h \
+		/usr/local/include/SDL2/SDL_keycode.h \
+		/usr/local/include/SDL2/SDL_scancode.h \
+		/usr/local/include/SDL2/SDL_mouse.h \
+		/usr/local/include/SDL2/SDL_joystick.h \
+		/usr/local/include/SDL2/SDL_gamecontroller.h \
+		/usr/local/include/SDL2/SDL_quit.h \
+		/usr/local/include/SDL2/SDL_gesture.h \
+		/usr/local/include/SDL2/SDL_touch.h \
+		/usr/local/include/SDL2/SDL_filesystem.h \
+		/usr/local/include/SDL2/SDL_haptic.h \
+		/usr/local/include/SDL2/SDL_hints.h \
+		/usr/local/include/SDL2/SDL_loadso.h \
+		/usr/local/include/SDL2/SDL_log.h \
+		/usr/local/include/SDL2/SDL_messagebox.h \
+		/usr/local/include/SDL2/SDL_power.h \
+		/usr/local/include/SDL2/SDL_render.h \
+		/usr/local/include/SDL2/SDL_system.h \
+		/usr/local/include/SDL2/SDL_timer.h \
+		/usr/local/include/SDL2/SDL_version.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Window.o src/Window.cpp
 
 ####### Install

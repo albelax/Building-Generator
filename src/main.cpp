@@ -34,7 +34,6 @@
 #include "Corner.h"
 #include "TrackballCamera.h"
 
-#define TRACKBALL 1
 
 int main()
 {
@@ -104,28 +103,28 @@ int main()
 
 		while (SDL_PollEvent(&event))
 		{
-			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
-				mainCamera.handleMouseClick(event.button.x, event.button.y, event.button.button, event.type, 0);
-			mainCamera.handleMouseMove(event.button.x, event.button.y);
+//			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
+//				mainCamera.handleMouseClick(event.button.x, event.button.y, event.button.button, event.type, 0);
+//			mainCamera.handleMouseMove(event.button.x, event.button.y);
 
 			switch (event.type)
 			{
 				case SDL_QUIT: quit = true; break;
-				case SDL_WINDOWEVENT:
+				case SDL_WINDOWEVENT_RESIZED:
+				case SDL_WINDOWEVENT_MAXIMIZED:
 					SDL_GetWindowSize(mainWindow.getWindow(), &width, &height);
 					mainWindow.setWindowSize(width, height);
 					glViewport(0,0,width, height);
 					projection = glm::perspective(glm::radians(60.0f),
 					static_cast<float>(mainWindow.getWidth())/static_cast<float>(mainWindow.getHeight()), 0.1f, 100.0f);
 					break;
+				case SDL_MOUSEBUTTONDOWN:
+				case SDL_MOUSEBUTTONUP:
+					mainCamera.handleMouseClick(event.button.x, event.button.y, event.button.button, event.type, 0);
+					break;
 				default: break;
 			}
-//			mainCamera.handleMouseMove(event.button.x, event.button.y);
-//			switch(event.key.keysym.sym)
-//			{
-//				case SDLK_ESCAPE: quit = true; break;
-//			}
-
+			mainCamera.handleMouseMove(event.button.x, event.button.y);
 		}
 		mainCamera.update();
 		glClearColor(0.36f,0.36f,0.36f,1.0f);
