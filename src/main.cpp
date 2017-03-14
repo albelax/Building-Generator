@@ -103,15 +103,10 @@ int main()
 
 		while (SDL_PollEvent(&event))
 		{
-//			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
-//				mainCamera.handleMouseClick(event.button.x, event.button.y, event.button.button, event.type, 0);
-//			mainCamera.handleMouseMove(event.button.x, event.button.y);
-
 			switch (event.type)
 			{
 				case SDL_QUIT: quit = true; break;
-				case SDL_WINDOWEVENT_RESIZED:
-				case SDL_WINDOWEVENT_MAXIMIZED:
+				case SDL_WINDOWEVENT:
 					SDL_GetWindowSize(mainWindow.getWindow(), &width, &height);
 					mainWindow.setWindowSize(width, height);
 					glViewport(0,0,width, height);
