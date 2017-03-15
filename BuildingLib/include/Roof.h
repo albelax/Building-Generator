@@ -2,6 +2,7 @@
 #define ROOF_H
 
 #include "Object.h"
+#include "Corner.h"
 #include "Walls.h"
 #include <vector>
 

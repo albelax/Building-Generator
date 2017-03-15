@@ -35,8 +35,10 @@ Corner::Corner(Walls &_base)
 			else if (m_translationTable[column][row] == 1)
 				tmp = glm::translate(_base.getMVs()[i], glm::vec3(-0.256,0,0.745f));
 
+
 			(*it) = glm::rotate(tmp, glm::radians(m_rotationTable[column][row]), glm::vec3(0.0f, 0.1f, 0.0f));
 			it++;
+			m_isException.push_back(m_translationTable[column][row]);
 		}
 	}
 	m_MVs.resize(std::distance(m_MVs.begin(), it));
