@@ -1,5 +1,10 @@
 #include "Walls.h"
 
+Walls::Walls()
+{
+
+}
+
 Walls::Walls(std::string _rule)
 {
 	m_padding = 1.5f;
@@ -51,7 +56,7 @@ void Walls::generateMVs()
 	float totX = 0.f;
 	float totZ = 0.f;
 
-	for (size_t i = 1; i < m_rule.length(); ++i)
+	for (size_t i = 0; i < m_rule.length(); ++i)
 	{
 		switch(m_rule[i])
 		{
@@ -68,6 +73,11 @@ void Walls::generateMVs()
 			case 'd': row = 3; break;
 		}
 		// if the column is the same as the
+
+		if (i == 0)
+		{
+
+		}
 
 		float x = m_translationTable[column][row] == 1 ? 0 : m_translationTable[column][row];
 		float correction_x = 0;

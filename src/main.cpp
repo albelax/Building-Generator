@@ -61,10 +61,15 @@ int main()
 	glViewport(0,0,width, height);
 
 	Building building = Building();
-	int bufferSize = building.amountVertices();
+	Mesh cube = Mesh("models/cube.obj","cube");
+
+	int bufferSize = building.amountVertices() + cube.getAmountVertexData();
 
 	Buffer buffer(bufferSize, sizeof(float)); // generate vbo buffer
 	building.setBufferIndex(buffer.append((void *) building.getVertices(), building.amountVertices(), Buffer::VERTEX));
+
+	cube.setBufferIndex(buffer.append((void*) &cube.getVertices(), cube.getAmountVertexData(), Buffer::VERTEX));
+//	asteroid.setBufferIndex(buffer.append((void *) &asteroid.getVertices(), asteroid.getAmountVertexData(), Buffer::VERTEX));
 
 	// pass the vertex data to the shader
 	GLint pos = glGetAttribLocation(test.getShaderProgram(), "VertexPosition");
@@ -72,6 +77,9 @@ int main()
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	buffer.append((void *) building.getNormals(), building.amountVertices(), Buffer::NORMAL);
+//	buffer.append((void *) &asteroid.getNormals(), asteroid.getAmountVertexData(), Buffer::NORMAL);
+	buffer.append((void *) &cube.getNormals(), cube.getAmountVertexData(), Buffer::NORMAL);
+
 	// pass the normals to the shader
 	GLint n = glGetAttribLocation(test.getShaderProgram(), "VertexNormal");
 	glEnableVertexAttribArray(n);

@@ -11,73 +11,10 @@ Roof::Roof(Object &_walls, Object &_corners)
 {
 	std::vector<glm::mat4> tmp = _walls.getMVs();
 	m_MVs = _walls.getMVs();
-//	for (auto m : _corners.getMVs())
-//	{
-//		m_MVs.push_back(m);
-//	}
 	sortEdges();
 	fill();
-
-	for (unsigned int i = 0; i < m_MVs.size(); ++i)
-	{
-		bool toDecrement = false; // need this variable to avoid indexing problems
-		glm::vec3 i_scale(1.0f);
-		glm::quat i_rotation;
-		glm::vec3 i_translation(1.0f);
-		glm::vec3 i_skew(1.0f);
-		glm::vec4 i_perspective(1.0f);
-		glm::decompose(m_MVs[i], i_scale, i_rotation, i_translation, i_skew, i_perspective);
-
-		// remove the matrices at the edges
-		for (unsigned int j = 0; j < tmp.size(); ++j)
-		{
-			glm::vec3 j_scale(1.0f);
-			glm::quat j_rotation;
-			glm::vec3 j_translation(1.0f);
-			glm::vec3 j_skew(1.0f);
-			glm::vec4 j_perspective(1.0f);
-			glm::decompose(tmp[j], j_scale, j_rotation, j_translation, j_skew, j_perspective);
-
-			if ( Roof::round(i_translation.x) == Roof::round(j_translation.x)
-			&&  Roof::round(i_translation.z) == Roof::round(j_translation.z))
-			{
-					m_MVs.erase(m_MVs.begin()+i);
-					if (i == 0)
-						{
-							i = 0;
-							toDecrement = true;
-						}
-					else
-					--i;
-			}
-		}
-
-		// remove the matrices at the edges
-		for (unsigned int j = 0; j < _corners.getMVs().size(); ++j)
-		{
-			glm::vec3 j_scale(1.0f);
-			glm::quat j_rotation;
-			glm::vec3 j_translation(1.0f);
-			glm::vec3 j_skew(1.0f);
-			glm::vec4 j_perspective(1.0f);
-			glm::decompose(_corners.getMVs()[j], j_scale, j_rotation, j_translation, j_skew, j_perspective);
-//			std::cout << (dynamic_cast<Corner&>(_corners).getExceptions()[j]) <<" corner x: " << Roof::round(j_translation.x) << " z: " << Roof::round(j_translation.z) << " \n" << i << " roof x: " << Roof::round(i_translation.x )<< " z: " << Roof::round(i_translation.z) << '\n';
-
-			if(fabs(i_translation.z - j_translation.z) <= 0.5f
-			    && fabs(Roof::round(i_translation.x) - Roof::round(j_translation.x)) <= 0)
-			{
-					std::cout << "pippo \n";
-				if ((dynamic_cast<Corner&>(_corners).getExceptions()[j]) == 1.0f)
-				{
-					m_MVs.erase(m_MVs.begin()+i);
-					--i;
-					std::cout << (dynamic_cast<Corner&>(_corners).getExceptions()[j]) << " corner x: " << Roof::round(j_translation.x) << " z: " << Roof::round(j_translation.z) << " \n" << i << " roof x: " << Roof::round(i_translation.x )<< " z: " << Roof::round(i_translation.z) << '\n';
-				}
-			}
-		}
-		if (toDecrement)
-			--i;
-	}
+	removeMatrices(_walls);
+	removeMatrices(_corners);
 }
 
 
@@ -117,6 +54,7 @@ void Roof::sortEdges()
 		glm::vec3 mv_skew(1.0f);
 		glm::vec4 mv_perspective(1.0f);
 		glm::decompose(m_MVs[i], mv_scale, mv_rotation, mv_translation, mv_skew, mv_perspective);
+
 		// sort matrices by Z
 		bool isIn = false;
 		for (auto m : matrices)
@@ -173,6 +111,7 @@ void Roof::sortEdges()
 			glm::vec3 j_skew(1.0f);
 			glm::vec4 j_perspective(1.0f);
 			glm::decompose(m_MVs[j], j_scale, j_rotation, j_translation, j_skew, j_perspective);
+
 			if ( Roof::round(i_translation.z) == Roof::round(j_translation.z) && Roof::round(i_translation.x) > Roof::round(j_translation.x) && i < j)
 			{
 					glm::mat4 tmp = m_MVs[i];
@@ -214,10 +153,59 @@ void Roof::fill()
 			matrices.push_back(tmp);
 		}
 	}
-
 	m_MVs = matrices;
 }
 
+
+void Roof::removeMatrices(Object &_object)
+{
+	bool isCorner = true;
+	Corner *corner = dynamic_cast<Corner*>(&_object);
+	if(corner == NULL)
+		isCorner = false;
+
+	for (unsigned int i = 0; i < m_MVs.size(); ++i)
+	{
+		glm::vec3 i_scale(1.0f);
+		glm::quat i_rotation;
+		glm::vec3 i_translation(1.0f);
+		glm::vec3 i_skew(1.0f);
+		glm::vec4 i_perspective(1.0f);
+		glm::decompose(m_MVs[i], i_scale, i_rotation, i_translation, i_skew, i_perspective);
+
+		// remove corners
+		for (unsigned int j = 0; j < _object.getMVs().size(); ++j)
+		{
+			glm::vec3 j_scale(1.0f);
+			glm::quat j_rotation;
+			glm::vec3 j_translation(1.0f);
+			glm::vec3 j_skew(1.0f);
+			glm::vec4 j_perspective(1.0f);
+			glm::decompose(_object.getMVs()[j], j_scale, j_rotation, j_translation, j_skew, j_perspective);
+			if(isCorner && (dynamic_cast<Corner&>(_object).getExceptions()[j]) == 1.0f)
+			{
+				if(fabs(i_translation.z - j_translation.z) <= 0.5f
+				&& Roof::round(i_translation.x) == Roof::round(j_translation.x))
+				{
+					m_MVs.erase(m_MVs.begin()+i);
+					if (i == 0) i = 0;
+					else --i;
+				}
+			}
+			// remove edges
+			else if(!isCorner)
+			{
+				if ( Roof::round(i_translation.x) == Roof::round(j_translation.x)
+				&&  Roof::round(i_translation.z) == Roof::round(j_translation.z))
+				{
+					m_MVs.erase(m_MVs.begin()+i);
+					if (i == 0) i = 0;
+					else --i;
+				}
+			}
+		}
+	}
+}
 
 bool Roof::isNearlyEqual(float a, float b, float error_margin)
 {

@@ -32,18 +32,29 @@ public:
 	void setBufferIndex(int _index) { m_bufferIndex = _index; }
 	int getBufferIndex() const { return m_bufferIndex; }
 	void create();
+	void makeBase();
+	void makeDecorations();
+	void makeWindows();
+	void makeRoof();
+	void setHeight(int _height) { m_height = _height; }
+	void setMode(GenerationMode _mode) {m_mode = _mode; }
 private:
 	enum Floor {ALL, BOTTOM, TOP, NOT_BOTTOM };
+	enum GenerationMode m_mode;
+	int m_height;
 	/// rule that determines the shape of the base
 	std::string m_rule;
 	/// generating the rule that will make the walls
-	void generateBase();
+	void generateRule();
+	Walls m_walls;
+	Corner m_corners;
 	void combinearrays(Mesh & _mesh, Object * _object, Floor _floor);
 	std::vector<float> m_vertices;
 	std::vector<float> m_normals;
-	int m_height;
 	std::string selectFolder(GenerationMode _MODE, element _ELEMENT);
 	std::vector<std::string> ls(std::string _directory, fileType _TYPE);
+
 };
+
 
 #endif // BUILDING_H

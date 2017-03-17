@@ -9,13 +9,7 @@ isEqual(QT_MAJOR_VERSION, 5) { cache() }
 QT += core
 
 INCLUDEPATH += $$PWD/../glm/
-DEPENDPATH += $$PWD/../glm/
-
-#INCLUDEPATH +=	$$PWD/../glm/ \
-#$$PWD/../glm/detail/ \
-#$$PWD/../glm/gtc/ \
-#$$PWD/../glm/gtx/ \
-#$$PWD/../glm/simd/
+#DEPENDPATH += $$PWD/../glm/
 
 TARGET=BuildingLib
 DESTDIR=$$PWD/lib
@@ -33,11 +27,6 @@ macx:QMAKE_CXXFLAGS+= -arch x86_64
 
 QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
 LIBS += $$system(sdl2-config --libs)
-
-#LIBS += -F/Library/Frameworks -framework SDL2
-#INCLUDEPATH += /Library/Frameworks/SDL.framework/Headers
-#INCLUDEPATH += /usr/local/include/SDL2
-
 
 LIBS += -L/usr/local/lib
 macx:LIBS+= -framework OpenGL

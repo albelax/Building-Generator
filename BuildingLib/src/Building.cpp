@@ -4,10 +4,15 @@
 
 Building::Building() /*: m_walls(m_rule), m_corners(m_walls)*/
 {
-	create();
+//	create();
+	generateRule();
+//	m_height = 5;
+//	m_mode = MIX;
+//	makeBase();
+//	makeDecorations();
 }
 
-void Building::generateBase()
+void Building::generateRule()
 {
 	// for now I just have a few rules,
 	// maybe at some point I will actually generate them randomly
@@ -33,8 +38,20 @@ void Building::combinearrays(Mesh & _mesh, Object * _object, Floor _floor)
 			break;
 	}
 
+	// the iterators keep track of the positions of the last elements added,
+	// I decided to use iterators because of the ease of use,
+	// unfortunately iterators break in case the vector is resized,
+	// this is why I added other ints to recover the indices in case the vector is resized
 	static std::vector<float>::iterator vertices_it = m_vertices.begin();
 	static std::vector<float>::iterator normals_it = m_normals.begin();
+	static unsigned int previousSize = m_vertices.size();
+	static int lastIndex;
+
+	if (m_vertices.size() > previousSize)
+	{
+		vertices_it = m_vertices.begin() + lastIndex;
+		normals_it = m_normals.begin() + lastIndex;
+	}
 	for (unsigned int floor = floor_begin; floor < floor_end; ++floor)
 	{
 		for (auto mv : _object->getMVs())
@@ -57,6 +74,7 @@ void Building::combinearrays(Mesh & _mesh, Object * _object, Floor _floor)
 			}
 		}
 	}
+	lastIndex = vertices_it - m_vertices.begin();
 }
 
 
@@ -66,11 +84,6 @@ std::string Building::selectFolder(GenerationMode _MODE, element _ELEMENT)
 	std::vector<std::string> files;
 	srandom (time(NULL));
 	directories = Building::ls("models/", fileType::DIRECTORY);
-
-	for (auto i : directories)
-	{
-		std::cout << "dir: " << i <<"\n";
-	}
 
 	static std::string buildingFolder = directories[(random() % directories.size())];
 	switch (_MODE)
@@ -89,12 +102,6 @@ std::string Building::selectFolder(GenerationMode _MODE, element _ELEMENT)
 		case element::ROOF : address += "/Roof/"; break;
 	}
 	files = Building::ls(address, fileType::OBJ_FILE);
-
-	for (auto i : files)
-	{
-		std::cout << "file: " << i <<"\n";
-	}
-
 	address = address + files[(random() % files.size())];
 	return address;
 }
@@ -102,6 +109,8 @@ std::string Building::selectFolder(GenerationMode _MODE, element _ELEMENT)
 
 std::vector<std::string> Building::ls(std::string _directory, fileType _TYPE)
 {
+	/// returns a std::vector containing all the obj files and all the folders
+	/// in the current directry
 	std::vector<std::string> files;
 	DIR * dir;
 	dirent * element;
@@ -110,7 +119,8 @@ std::vector<std::string> Building::ls(std::string _directory, fileType _TYPE)
 	{
 		while ((element = readdir(dir)))
 		{
-			// goes through each element of the directory
+			// goes through each element of the current directory
+			// looking for obj files and folders
 			std::string name = (char*) element->d_name;
 			bool isFile = false;
 			if (name.length() > 4 && name.substr((name.length()-4),name.length()) == ".obj")
@@ -138,8 +148,8 @@ std::vector<std::string> Building::ls(std::string _directory, fileType _TYPE)
 
 void Building::create()
 {
-	enum GenerationMode X = MIX;
-	generateBase();
+	m_mode = MIX;
+	generateRule();
 	m_height = 5;
 	Walls m_walls = Walls(m_rule);
 	Corner m_corners = Corner(m_walls);
@@ -148,10 +158,8 @@ void Building::create()
 	Mesh m_corner_mesh = Mesh("models/my_Building/Corners/b_oriented_cut_corner.obj", "corner");
 	Mesh m_roof_mesh = Mesh("models/my_Building/Roofs/cube.obj", "cube");
 	Mesh m_roofEdges_mesh = Mesh("models/my_Building/Roofs/Roof_edge.obj", "roofEdge");
-//	Mesh m_decoration = Mesh("models/new_Building/Decorations/deco.obj", "deco");
-//	Mesh m_window = Mesh("models/my_Building/Windows/window.obj", "win");
-	Mesh m_decoration = Mesh(selectFolder(X, element::DECORATION), "deco");
-	Mesh m_window = Mesh(selectFolder(X, element::WINDOW), "win");
+	Mesh m_decoration = Mesh(selectFolder(m_mode, element::DECORATION), "deco");
+	Mesh m_window = Mesh(selectFolder(m_mode, element::WINDOW), "win");
 	unsigned int walls_size = m_wall_mesh.getAmountVertexData() * m_walls.getMVs().size();
 	unsigned int corners_size = m_corner_mesh.getAmountVertexData() * m_corners.getMVs().size();
 	unsigned int roof_size = m_roof_mesh.getAmountVertexData() * m_roof.getMVs().size();
@@ -168,4 +176,27 @@ void Building::create()
 	combinearrays(m_roof_mesh, dynamic_cast<Object*>(&m_roof), Floor::TOP); // fills the roof
 //	combinearrays(m_roof_mesh, dynamic_cast<Object*>(&m_corners), Floor::TOP); // fills the roof
 	combinearrays(m_roofEdges_mesh, dynamic_cast<Object*>(&m_walls), Floor::TOP); // place the roof only at the edges
+}
+
+void Building::makeBase()
+{
+	m_walls = Walls(m_rule);
+	m_corners = Corner(m_walls);
+	Mesh m_wall_mesh = Mesh("models/my_Building/Walls/Plane.obj", "wall");
+	Mesh m_corner_mesh = Mesh("models/my_Building/Corners/b_oriented_cut_corner.obj", "corner");
+	unsigned int walls_size = m_wall_mesh.getAmountVertexData() * m_walls.getMVs().size();
+	unsigned int corners_size = m_corner_mesh.getAmountVertexData() * m_corners.getMVs().size();
+	m_vertices.resize(m_vertices.size() + (walls_size*m_height) + (corners_size*m_height));
+	m_normals.resize(m_normals.size() + (walls_size*m_height) + (corners_size*m_height));
+	combinearrays(m_wall_mesh, dynamic_cast<Object*>(&m_walls), Floor::ALL);
+	combinearrays(m_corner_mesh, dynamic_cast<Object*>(&m_corners), Floor::ALL);
+}
+
+void Building::makeDecorations()
+{
+	Mesh m_decoration = Mesh(selectFolder(m_mode, element::DECORATION), "deco");
+	unsigned int deco_size = m_decoration.getAmountVertexData() * m_walls.getMVs().size();
+	m_vertices.resize(m_vertices.size() + (deco_size*m_height));
+	m_normals.resize(m_normals.size() + (deco_size*m_height));
+	combinearrays(m_decoration, dynamic_cast<Object*>(&m_walls), Floor::ALL);
 }

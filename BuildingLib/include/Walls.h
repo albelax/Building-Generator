@@ -6,6 +6,7 @@
 class Walls : public Object
 {
 public:
+	Walls();
 	Walls(std::string _rule);
 	const std::string * getRule() const { return &m_rule; }
 private:
