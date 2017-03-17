@@ -33,6 +33,8 @@
 #include "Mesh.h"
 #include "Corner.h"
 #include "TrackballCamera.h"
+#include "Builder.h"
+#include "MixBuilder.h"
 
 
 int main()
@@ -60,7 +62,8 @@ int main()
 
 	glViewport(0,0,width, height);
 
-	Building building = Building();
+	MixBuilder builder = MixBuilder();
+	Building building = builder.getBuilding(); //Building();
 	Mesh cube = Mesh("models/cube.obj","cube");
 
 	int bufferSize = building.amountVertices() + cube.getAmountVertexData();

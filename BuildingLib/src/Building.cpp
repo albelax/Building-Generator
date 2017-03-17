@@ -6,10 +6,10 @@ Building::Building() /*: m_walls(m_rule), m_corners(m_walls)*/
 {
 //	create();
 	generateRule();
-//	m_height = 5;
-//	m_mode = MIX;
-//	makeBase();
-//	makeDecorations();
+////	m_height = 5;
+////	m_mode = MIX;
+////	makeBase();
+////	makeDecorations();
 }
 
 void Building::generateRule()
@@ -18,8 +18,8 @@ void Building::generateRule()
 	// maybe at some point I will actually generate them randomly
 	m_rule = "ruld";
 	m_rule = "rrrruuulldld";
-	m_rule = "rrrurruuuuldlluldddddd";
-	m_rule = "rurdruuulllllddd";
+//	m_rule = "rrrurruuuuldlluldddddd";
+//	m_rule = "rurdruuulllllddd";
 }
 
 void Building::combinearrays(Mesh & _mesh, Object * _object, Floor _floor)
@@ -80,6 +80,8 @@ void Building::combinearrays(Mesh & _mesh, Object * _object, Floor _floor)
 
 std::string Building::selectFolder(GenerationMode _MODE, element _ELEMENT)
 {
+	/// select the assets from a specific style, if the mode is MIX the style will keep changing
+	/// otherwise it won't
 	std::vector<std::string> directories;
 	std::vector<std::string> files;
 	srandom (time(NULL));
@@ -99,7 +101,7 @@ std::string Building::selectFolder(GenerationMode _MODE, element _ELEMENT)
 		case element::CORNER: address += "/Corners/"; break;
 		case element::DECORATION : address += "/Decorations/"; break;
 		case element::WINDOW : address += "/Windows/"; break;
-		case element::ROOF : address += "/Roof/"; break;
+		case element::ROOF : address += "/Roofs/"; break;
 	}
 	files = Building::ls(address, fileType::OBJ_FILE);
 	address = address + files[(random() % files.size())];
@@ -182,21 +184,44 @@ void Building::makeBase()
 {
 	m_walls = Walls(m_rule);
 	m_corners = Corner(m_walls);
-	Mesh m_wall_mesh = Mesh("models/my_Building/Walls/Plane.obj", "wall");
-	Mesh m_corner_mesh = Mesh("models/my_Building/Corners/b_oriented_cut_corner.obj", "corner");
-	unsigned int walls_size = m_wall_mesh.getAmountVertexData() * m_walls.getMVs().size();
-	unsigned int corners_size = m_corner_mesh.getAmountVertexData() * m_corners.getMVs().size();
+	Mesh wall_mesh = Mesh("models/my_Building/Walls/Plane.obj", "wall");
+	Mesh corner_mesh = Mesh(selectFolder(m_mode, element::CORNER), "corner");
+	unsigned int walls_size = wall_mesh.getAmountVertexData() * m_walls.getMVs().size();
+	unsigned int corners_size = corner_mesh.getAmountVertexData() * m_corners.getMVs().size();
 	m_vertices.resize(m_vertices.size() + (walls_size*m_height) + (corners_size*m_height));
 	m_normals.resize(m_normals.size() + (walls_size*m_height) + (corners_size*m_height));
-	combinearrays(m_wall_mesh, dynamic_cast<Object*>(&m_walls), Floor::ALL);
-	combinearrays(m_corner_mesh, dynamic_cast<Object*>(&m_corners), Floor::ALL);
+	combinearrays(wall_mesh, dynamic_cast<Object*>(&m_walls), Floor::ALL);
+	combinearrays(corner_mesh, dynamic_cast<Object*>(&m_corners), Floor::ALL);
 }
 
 void Building::makeDecorations()
 {
-	Mesh m_decoration = Mesh(selectFolder(m_mode, element::DECORATION), "deco");
-	unsigned int deco_size = m_decoration.getAmountVertexData() * m_walls.getMVs().size();
-	m_vertices.resize(m_vertices.size() + (deco_size*m_height));
-	m_normals.resize(m_normals.size() + (deco_size*m_height));
-	combinearrays(m_decoration, dynamic_cast<Object*>(&m_walls), Floor::ALL);
+	Mesh decoration = Mesh(selectFolder(m_mode, element::DECORATION), "deco");
+	unsigned int deco_size = decoration.getAmountVertexData() * m_walls.getMVs().size();
+	m_vertices.resize(m_vertices.size() + (deco_size*(m_height-1)));
+	m_normals.resize(m_normals.size() + (deco_size*(m_height-1)));
+	combinearrays(decoration, dynamic_cast<Object*>(&m_walls), Floor::NOT_BOTTOM);
+}
+
+void Building::makeWindows()
+{
+	Mesh window = Mesh(selectFolder(m_mode, element::WINDOW), "win");
+	unsigned int window_size = window.getAmountVertexData() * m_walls.getMVs().size();
+	m_vertices.resize(m_vertices.size() + (window_size*(m_height-1))); // - 1 because it doesn't include the ground floor
+	m_normals.resize(m_normals.size() + (window_size*(m_height-1)));
+	combinearrays(window, dynamic_cast<Object*>(&m_walls), Floor::NOT_BOTTOM);
+}
+
+
+void Building::makeRoof()
+{
+	Roof roof = Roof(m_walls, m_corners);
+	Mesh roof_mesh = Mesh("models/cube.obj", "cube");
+	Mesh roofEdges_mesh = Mesh(selectFolder(m_mode, element::ROOF), "roofEdge");
+	unsigned int roof_size = roof_mesh.getAmountVertexData() * roof.getMVs().size();
+	unsigned int roofEdges_size = roofEdges_mesh.getAmountVertexData() * m_walls.getMVs().size();
+	m_vertices.resize(m_vertices.size() + roof_size + roofEdges_size);
+	m_normals.resize(m_normals.size() + roof_size + roofEdges_size);
+	combinearrays(roof_mesh, dynamic_cast<Object*>(&roof), Floor::TOP); // fills the roof
+	combinearrays(roofEdges_mesh, dynamic_cast<Object*>(&m_walls), Floor::TOP); // place the roof only at the edges
 }
