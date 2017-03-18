@@ -15,15 +15,19 @@ void Building::generateRule()
 	// for now I just have a few rules,
 	// maybe at some point I will actually generate them randomly
 	m_rule = "ruld";
-	m_rule = "rrrruuulldld";
-//	m_rule = "rrrurruuuuldlluldddddd";
-	m_rule = "rurdruuulllllddd";
+	m_rule = "rruuullldddr";
+//	m_rule = "rrrruuulldld";
+//	m_rule = "rdruuullllldddru";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void Building::combinearrays(Mesh & _mesh, Object * _object, Floor _floor)
 {
+	// this function applies the transformations to each mesh
+	// and combines every element into one single array of floats,
+	// this allows me to draw each building in one draw call
+
 	unsigned int floor_begin;
 	unsigned int floor_end;
 	switch (_floor)
@@ -35,6 +39,8 @@ void Building::combinearrays(Mesh & _mesh, Object * _object, Floor _floor)
 		case(Floor::TOP) : floor_begin = m_height; floor_end = m_height+1;
 			break;
 		case(Floor::NOT_BOTTOM) : floor_begin = 1; floor_end = m_height;
+			break;
+		case(Floor::ENTRANCE) : floor_begin = 0; floor_end = 1;
 			break;
 	}
 
@@ -79,6 +85,10 @@ void Building::combinearrays(Mesh & _mesh, Object * _object, Floor _floor)
 				(*normals_it++) = (tmp_normals.y);
 				(*normals_it++) = (tmp_normals.z);
 			}
+			if (_floor == ENTRANCE)
+			{
+				break;
+			}
 		}
 	}
 	lastIndex = vertices_it - m_vertices.begin();
@@ -110,6 +120,7 @@ std::string Building::selectFolder(GenerationMode _MODE, element _ELEMENT)
 		case element::DECORATION : address += "/Decorations/"; break;
 		case element::WINDOW : address += "/Windows/"; break;
 		case element::ROOF : address += "/Roofs/"; break;
+		case element::FRONT : address += "/Front/"; break;
 	}
 	files = Building::ls(address, fileType::OBJ_FILE);
 	address = address + files[(random() % files.size())];
@@ -221,6 +232,18 @@ void Building::makeWindows()
 	m_vertices.resize(m_vertices.size() + (window_size*(m_height-1))); // - 1 because it doesn't include the ground floor
 	m_normals.resize(m_normals.size() + (window_size*(m_height-1)));
 	combinearrays(window, dynamic_cast<Object*>(&m_walls), Floor::NOT_BOTTOM);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void Building::makeFront()
+{
+	// this function places the entrance of the building, it doesn't need to repeat
+	Mesh front = Mesh(selectFolder(m_mode, element::FRONT), "front");
+	unsigned int front_size = front.getAmountVertexData();
+	m_vertices.resize(m_vertices.size() + (front_size));
+	m_normals.resize(m_normals.size() + (front_size));
+	combinearrays(front, dynamic_cast<Object*>(&m_walls), Floor::ENTRANCE);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

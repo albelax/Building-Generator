@@ -21,17 +21,14 @@ class Building : public Object
 {
 public:
 	enum GenerationMode { RANDOM_MIX, MIX, RANDOM_STYLE, SELECT_STYLE };
-	enum element { WALL, CORNER, DECORATION, WINDOW, ROOF };
+	enum element { WALL, CORNER, DECORATION, WINDOW, ROOF, FRONT };
 	enum fileType { DIRECTORY, OBJ_FILE };
 	Building();
 	const std::string * getRule() const { return &m_rule; }
-	//const std::vector<float> &getVertices() const { return m_vertices; }
 	float * getVertices() { return &m_vertices[0]; }
 	float * getNormals() { return &m_normals[0]; }
-
 	std::vector<float> const & getVerticesContainer() { return m_vertices; }
 	std::vector<float> const & getNormalsContainer() { return m_normals; }
-//	float * getNormals() { return &m_normals[0]; }
 
 	int amountVertices() { return m_vertices.size(); }
 	void setBufferIndex(int _index) { m_bufferIndex = _index; }
@@ -41,11 +38,12 @@ public:
 	void makeDecorations();
 	void makeWindows();
 	void makeRoof();
+	void makeFront();
 	void setHeight(int _height) { m_height = _height; }
 	void setMode(GenerationMode _mode) {m_mode = _mode; }
 
 private:
-	enum Floor {ALL, BOTTOM, TOP, NOT_BOTTOM };
+	enum Floor {ALL, BOTTOM, TOP, NOT_BOTTOM, ENTRANCE };
 	enum GenerationMode m_mode;
 	int m_height;
 	/// rule that determines the shape of the base

@@ -5,6 +5,8 @@ Walls::Walls()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 Walls::Walls(std::string _rule)
 {
 	m_padding = 1.5f;
@@ -15,6 +17,7 @@ Walls::Walls(std::string _rule)
 	generateMVs();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
 void Walls::makeRotationTable()
 {
@@ -37,6 +40,8 @@ void Walls::makeRotationTable()
 	};
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void Walls::makeTranslationTable()
 {
 	m_translationTable =
@@ -47,6 +52,8 @@ void Walls::makeTranslationTable()
 	{-m_padding, m_padding, m_padding, 1}	 // d
 	};
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void Walls::generateMVs()
 {
@@ -72,13 +79,6 @@ void Walls::generateMVs()
 			case 'l': row = 2; break;
 			case 'd': row = 3; break;
 		}
-		// if the column is the same as the
-
-		if (i == 0)
-		{
-
-		}
-
 		float x = m_translationTable[column][row] == 1 ? 0 : m_translationTable[column][row];
 		float correction_x = 0;
 		if (x != 0)
@@ -99,3 +99,5 @@ void Walls::generateMVs()
 		m_MVs[i] = glm::translate(glm::mat4(1.0),glm::vec3(-totX/2.f, 0.f, -totZ/2.f))*m_MVs[i];
 	}
 }
+
+//----------------------------------------------------------------------------------------------------------------------
