@@ -63,16 +63,15 @@ int main()
 	glViewport(0,0,width, height);
 
 	MixBuilder builder = MixBuilder();
-	Building building = builder.getBuilding(); //Building();
+	Building building = builder.getBuilding();
 	Mesh cube = Mesh("models/cube.obj","cube");
-
-	int bufferSize = building.amountVertices() + cube.getAmountVertexData();
+//	cube.write();
+	int bufferSize = building.amountVertices();// + cube.getAmountVertexData();
 
 	Buffer buffer(bufferSize, sizeof(float)); // generate vbo buffer
 	building.setBufferIndex(buffer.append((void *) building.getVertices(), building.amountVertices(), Buffer::VERTEX));
 
-	cube.setBufferIndex(buffer.append((void*) &cube.getVertices(), cube.getAmountVertexData(), Buffer::VERTEX));
-//	asteroid.setBufferIndex(buffer.append((void *) &asteroid.getVertices(), asteroid.getAmountVertexData(), Buffer::VERTEX));
+//	cube.setBufferIndex(buffer.append((void*) &cube.getVertices(), cube.getAmountVertexData(), Buffer::VERTEX));
 
 	// pass the vertex data to the shader
 	GLint pos = glGetAttribLocation(test.getShaderProgram(), "VertexPosition");
@@ -80,8 +79,11 @@ int main()
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	buffer.append((void *) building.getNormals(), building.amountVertices(), Buffer::NORMAL);
-//	buffer.append((void *) &asteroid.getNormals(), asteroid.getAmountVertexData(), Buffer::NORMAL);
-	buffer.append((void *) &cube.getNormals(), cube.getAmountVertexData(), Buffer::NORMAL);
+//	buffer.append((void *) &cube.getNormals(), cube.getAmountVertexData(), Buffer::NORMAL);
+
+
+//	cube.write();
+
 
 	// pass the normals to the shader
 	GLint n = glGetAttribLocation(test.getShaderProgram(), "VertexNormal");
@@ -116,7 +118,10 @@ int main()
 		{
 			switch (event.type)
 			{
-				case SDL_QUIT: quit = true; break;
+				case SDL_QUIT:
+					quit = true;
+					Mesh::write(building.getVerticesContainer(), building.getNormalsContainer());
+				 break;
 				case SDL_WINDOWEVENT:
 					SDL_GetWindowSize(mainWindow.getWindow(), &width, &height);
 					mainWindow.setWindowSize(width, height);

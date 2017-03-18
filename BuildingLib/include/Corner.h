@@ -16,6 +16,7 @@ class Corner : public Object
 {
 public:
 	Corner();
+	Corner(std::vector<glm::mat4> &_MVs);
 	Corner(Walls &_base);
 	const std::vector<glm::mat4> & getCornersMVs() { return m_MVs; }
 	std::vector<int>  getExceptions() { return m_isException; }

@@ -41,14 +41,14 @@ macx:LIBS += -framework OpenGL
 
 
 # now if we are under unix and not on a Mac (i.e. linux) define GLEW
-#linux-g++:linux-g++-64
-#{
-#LIBS += -lGLEW
-#}
-#linux-clang
-#{
-#LIBS += -lGLEW
-#}
+linux-g++:linux-g++-64
+{
+LIBS += -lGLEW
+}
+linux-clang
+{
+LIBS += -lGLEW
+}
 
 
 

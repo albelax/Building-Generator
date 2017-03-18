@@ -16,6 +16,7 @@ class Object
 {
 public:
 	Object();
+	Object(std::vector<glm::mat4> &_MVs);
 	~Object();
 	const std::vector<glm::mat4> & getMVs() { return m_MVs; }
 protected:

@@ -36,7 +36,7 @@ DISTNAME      = BuildingGenerator1.0.0
 DISTDIR = /Users/albertolascala/Building-Generator/obj/BuildingGenerator1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -headerpad_max_install_names -stdlib=libc++ -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_LFLAGS)
-LIBS          = $(SUBLIBS) -F/Library/Frameworks -framework SDL2 -L/usr/local/lib -lSDL2 -L /Users/albertolascala/Building-Generator/BuildingLib/lib -lBuildingLib -framework OpenGL -framework AGL 
+LIBS          = $(SUBLIBS) -F/Library/Frameworks -framework SDL2 -L/usr/local/lib -lSDL2 -L /Users/albertolascala/Building-Generator/BuildingLib/lib -lBuildingLib -framework OpenGL -lGLEW -framework AGL 
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
 SED           = sed
@@ -1066,7 +1066,6 @@ obj/main.o: src/main.cpp /usr/local/include/SDL2/SDL.h \
 		include/Buffer.h \
 		BuildingLib/include/Building.h \
 		BuildingLib/include/Mesh.h \
-		BuildingLib/include/UtilityFunctions.h \
 		BuildingLib/include/Object.h \
 		glm/gtx/matrix_decompose.hpp \
 		glm/gtx/matrix_decompose.inl \
@@ -1074,7 +1073,9 @@ obj/main.o: src/main.cpp /usr/local/include/SDL2/SDL.h \
 		BuildingLib/include/Corner.h \
 		BuildingLib/include/Roof.h \
 		include/TrackballCamera.h \
-		include/Camera.h
+		include/Camera.h \
+		BuildingLib/include/Builder.h \
+		BuildingLib/include/MixBuilder.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/main.o src/main.cpp
 
 obj/Shader.o: src/Shader.cpp include/Shader.h

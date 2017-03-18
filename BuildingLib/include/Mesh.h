@@ -7,7 +7,6 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "UtilityFunctions.h"
 #include "glm.hpp"
 
 
@@ -23,9 +22,11 @@ class Mesh
 private:
 	std::vector<float> m_vertices;
 	std::vector<float> m_normals;
+	std::vector<std::string> m_address;
 	float m_minX, m_minY, m_minZ, m_maxX, m_maxY, m_maxZ;
 	std::string m_name;
 	int m_bufferIndex;
+	std::vector<std::string> split(std::string _stringIn, char _splitChar = ' ');
 public:
 	Mesh(std::string _address, std::string _name);
 	Mesh();
@@ -42,6 +43,9 @@ public:
 	size_t getAmountVertexData() const { return static_cast<int>(m_vertices.size()); }
 	int getBufferIndex() const { return m_bufferIndex; }
 	std::string name() const { return m_name; }
+	std::vector<std::string> getAddress() { return m_address; }
+	void write();
+	static void write(const std::vector<float> &_vertices, const std::vector<float> &_normals);
 };
 
 #endif // MESH_H

@@ -28,6 +28,11 @@ public:
 	//const std::vector<float> &getVertices() const { return m_vertices; }
 	float * getVertices() { return &m_vertices[0]; }
 	float * getNormals() { return &m_normals[0]; }
+
+	std::vector<float> const & getVerticesContainer() { return m_vertices; }
+	std::vector<float> const & getNormalsContainer() { return m_normals; }
+//	float * getNormals() { return &m_normals[0]; }
+
 	int amountVertices() { return m_vertices.size(); }
 	void setBufferIndex(int _index) { m_bufferIndex = _index; }
 	int getBufferIndex() const { return m_bufferIndex; }
@@ -38,6 +43,7 @@ public:
 	void makeRoof();
 	void setHeight(int _height) { m_height = _height; }
 	void setMode(GenerationMode _mode) {m_mode = _mode; }
+
 private:
 	enum Floor {ALL, BOTTOM, TOP, NOT_BOTTOM };
 	enum GenerationMode m_mode;
@@ -53,6 +59,7 @@ private:
 	std::vector<float> m_normals;
 	std::string selectFolder(GenerationMode _MODE, element _ELEMENT);
 	std::vector<std::string> ls(std::string _directory, fileType _TYPE);
+	void splitCorners(std::vector<glm::mat4> * _standard, std::vector<glm::mat4> * _exception);
 
 };
 

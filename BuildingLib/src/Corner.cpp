@@ -5,6 +5,11 @@ Corner::Corner()
 
 }
 
+Corner::Corner(std::vector<glm::mat4> &_MVs) : Object(_MVs)
+{
+
+}
+
 Corner::Corner(Walls &_base)
 {
 	makeRotationTable();

@@ -16,6 +16,15 @@ Mesh::Mesh(std::string _address, std::string _name)
 	std::string line;
 	std::vector<std::string> tempData;
 
+
+#ifdef _WIN32
+	char separator = '\';
+	m_address = Mesh::split(_address,'\');
+#else
+	char separator = '/';
+#endif
+	m_address = Mesh::split(_address, separator);
+
 	std::ifstream Source;
 	Source.open(_address);
 	Source.seekg(0, std::ios::end); // starts from the beginning and goes to the end of the file to know the lenght of it
@@ -44,7 +53,7 @@ Mesh::Mesh(std::string _address, std::string _name)
 		getline(Source, line);
 		if (line != "")
 		{
-			tempData = utilityFunctions::split(line);
+			tempData = Mesh::split(line);
 
 			if (tempData[0] == "v")
 			{
@@ -76,7 +85,7 @@ Mesh::Mesh(std::string _address, std::string _name)
 			{
 				for (int i = 0; i < static_cast<int>(tempData.size()-1); ++i) // -1 to avoid overflow
 				{
-					tempFaces = utilityFunctions::split(tempData[i+1], '/');
+					tempFaces = Mesh::split(tempData[i+1], separator);
 
 					if (iVertices == m_vertices.size())
 					{
@@ -135,3 +144,80 @@ void Mesh::draw() const
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+std::vector<std::string> Mesh::split(std::string _stringIn, char _splitChar)
+{
+	int count = 0;
+	std::string tempString;
+	std::vector<std::string> retVector;
+	for (int i = 0; i < static_cast<int>(_stringIn.length()+1); i++)
+	{
+		if(tempString.length() < 1 && _stringIn[i] == ' ') continue;
+		else if(_stringIn[i] != _splitChar)
+		{
+			tempString += _stringIn[i];
+		}
+		else
+		{
+			retVector.resize(retVector.size() + 1);
+			retVector[count] = tempString;
+			tempString.clear();
+			count++;
+		}
+
+		if(i == static_cast<int>(_stringIn.length()))
+		{
+			retVector.resize(retVector.size()+1);
+			retVector[count] = tempString;
+			tempString.clear();
+			count++;
+		}
+	}
+	return retVector;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void Mesh::write()
+{
+	std::ofstream out;
+	out.open("out.obj");
+	out.clear();
+	for(unsigned int i = 0; i < m_vertices.size(); i+=3)
+	{
+		out << "v " << m_vertices[i] << " " << m_vertices[i+1] << " " << m_vertices[i+2] << "\n";
+	}
+	for(unsigned int i = 0; i < m_normals.size(); i+=3)
+	{
+		out << "vn " << m_normals[i] << " " << m_normals[i+1] << " " << m_normals[i+2] << "\n";
+	}
+
+	for(unsigned int i = 0; i < m_vertices.size()/9; ++i)
+	{
+		out << "f " << (i*3)+1 << "//"<< (i*3)+1 << " " << (i*3)+2 << "//" << (i*3)+2 << " " << (i*3)+3 << "//" << (i*3)+3 << "\n";
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void Mesh::write(std::vector<float> const & _vertices, std::vector<float>const & _normals)
+{
+	std::ofstream out;
+	out.open("out.obj");
+	out.clear();
+	for(unsigned int i = 0; i < _vertices.size(); i+=3)
+	{
+		out << "v " << _vertices[i] << " " << _vertices[i+1] << " " << _vertices[i+2] << "\n";
+	}
+	for(unsigned int i = 0; i < _normals.size(); i+=3)
+	{
+		out << "vn " << _normals[i] << " " << _normals[i+1] << " " << _normals[i+2] << "\n";
+	}
+
+	for(unsigned int i = 0; i < _vertices.size()/9; ++i)
+	{
+		out << "f " << (i*3)+1 << "//"<< (i*3)+1 << " " << (i*3)+2 << "//" << (i*3)+2 << " " << (i*3)+3 << "//" << (i*3)+3 << "\n";
+	}
+}
+//----------------------------------------------------------------------------------------------------------------------
+
