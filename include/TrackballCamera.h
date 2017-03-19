@@ -1,8 +1,19 @@
 #ifndef TRACKBALLCAMERA_H
 #define TRACKBALLCAMERA_H
 
+///**********************************PLEASE NOTICE*****************************************///
+///****************************************************************************************///
+///*																																										  *///
+///*	THIS CLASS BELONGS TO RICHARD SOUTHERN,                                             *///
+///*	MINOR CHANGES WERE MADE TO MAKE SURE THE CAMERA WORKED WITH SDL											*///
+///*  BUT IT SHOUDLN'T BE MARKED																												  *///
+///*	THE ORIGINAL FILE IS FROM A RENDERING WORKSHOP (TRACKBALL - 2/2/2017)               *///
+///*																																										  *///
+///****************************************************************************************///
+///****************************************************************************************///
+
 #include "Camera.h"
-#include <glm/gtc/quaternion.hpp>
+#include <gtc/quaternion.hpp>
 
 /**
  * @brief The TrackballCamera class

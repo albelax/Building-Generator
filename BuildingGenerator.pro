@@ -7,35 +7,28 @@ CONFIG+=opengl
 OBJECTS_DIR = ./obj
 INCLUDEPATH += $$PWD/include/
 INCLUDEPATH += $$PWD/models
-INCLUDEPATH += $$PWD/glm
+INCLUDEPATH += $$PWD/lib/glm/
 INCLUDEPATH += $$PWD/Shaders
 
 SOURCES += src/*
 HEADERS += include/*
 
-OTHER_FILES +=	glm/*\
-glm/detail/* \
-glm/gtc/* \
-glm/gtx* \
-glm/simd/* \
-models/* \
-models/Walls/* \
-models/Corners/* \
-Shaders/*
+OTHER_FILES +=	models/* \
+								models/Walls/* \
+								models/Corners/* \
+								Shaders/*
 
-
-
-macx:LIBS += -F/Library/Frameworks -framework SDL2
-macx:INCLUDEPATH += /Library/Frameworks/SDL.framework/Headers
-macx:INCLUDEPATH += /usr/local/include/SDL2
 
 
 QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
 LIBS += $$system(sdl2-config --libs)
 INCLUDEPATH += /usr/local/include/SDL2
 
-INCLUDEPATH += $$PWD/BuildingLib/include
-LIBS+= -L $$PWD/BuildingLib/lib -lBuildingLib
+INCLUDEPATH+= /usr/local/include
+LIBS+= -L/usr/local/lib -lgtest -lpthread
+
+INCLUDEPATH += $$PWD/lib/BuildingLib/include
+LIBS+= -L $$PWD/lib/BuildingLib/lib -lBuildingLib
 
 macx:LIBS += -framework OpenGL
 

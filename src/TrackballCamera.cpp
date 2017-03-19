@@ -1,6 +1,6 @@
 #include "TrackballCamera.h"
-#include <glm/gtx/norm.hpp>
-#include <glm/gtc/constants.hpp>
+#include <gtx/norm.hpp>
+#include <gtc/constants.hpp>
 
 /**
  * This class was taken from a Rendering workshop

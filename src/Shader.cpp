@@ -29,11 +29,7 @@ Shader::Shader(std::string _name, std::string _vertex, std::string _fragment)
 	GLint status;
 	glGetShaderiv(tmp_shader, GL_COMPILE_STATUS, &status);
 
-	switch(status)
-	{
-		case(0): std::cout << "vertex shader did not compile" <<'\n'; break;
-		//case(1): std::cout << "vertex shader compiled" <<'\n'; break;
-	}
+	if( !status ) { std::cout << "vertex shader did not compile" << '\n'; }
 
 	// creation of the fragment shader
 	tmp_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -45,11 +41,7 @@ Shader::Shader(std::string _name, std::string _vertex, std::string _fragment)
 
 	glGetShaderiv(tmp_shader, GL_COMPILE_STATUS, &status);
 
-	switch(status)
-	{
-		case(0): std::cout << "fragment shader did not compile" <<'\n'; break;
-		//case(1): std::cout << "fragment shader compiled" <<'\n'; break;
-	}
+	if( !status ) { std::cout << "fragment shader did not compile" << '\n'; }
 
 	GLchar buffer[500];
 	glGetShaderInfoLog(tmp_shader,

@@ -1,6 +1,17 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+///**********************************PLEASE NOTICE*****************************************///
+///****************************************************************************************///
+///*																																										  *///
+///*	THIS CLASS BELONGS TO RICHARD SOUTHERN,                                             *///
+///*	MINOR CHANGES WERE MADE TO MAKE SURE THE CAMERA WORKED WITH SDL											*///
+///*  BUT IT SHOUDLN'T BE MARKED																												  *///
+///*	THE ORIGINAL FILE IS FROM A RENDERING WORKSHOP (TRACKBALL - 2/2/2017)               *///
+///*																																										  *///
+///****************************************************************************************///
+///****************************************************************************************///
+
 // For basic stream output
 #include <iostream>
 
@@ -11,13 +22,13 @@
 #include<SDL.h> // used instead of glfw
 
 // Needed for matrix operations
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 // Used to maintain a timer
 #include <chrono>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
+#include <mat4x4.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtx/string_cast.hpp>
 
 /**
  * @brief The Camera class

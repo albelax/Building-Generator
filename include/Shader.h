@@ -1,20 +1,12 @@
-//
-//  Shader.hpp
-//  Game_ios
-//
-//  Created by Alberto La Scala on 29/10/2016.
-//
-//
-
 #ifndef Shader_h
 #define Shader_h
 
 #ifdef linux
 #include <GL/glew.h>
-#endif
+#endif // linux
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
-#endif
+#endif // __APPLE__
 
 
 #include <string>
@@ -29,8 +21,8 @@ private:
 	std::string loadShader(std::string _filename);
 public:
 	Shader(std::string _name, std::string _vertexPath, std::string _fragmentPath);
-	std::string getName() { return this -> m_name; }
-	GLuint getShaderProgram() { return m_shaderProgram; }
+	std::string getName() const { return this -> m_name; }
+	GLuint getShaderProgram() const { return m_shaderProgram; }
 };
 
 #endif /* Shader_h */

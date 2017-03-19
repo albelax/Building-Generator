@@ -11,18 +11,20 @@
 #else
 #include <GL/glew.h>
 #define LINUX
-#endif
+#endif // __APPLE__
+
 #include <iostream>
 #include <SDL.h>
 #include <vector>
 #include <dirent.h>
+#include <random>
 
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
-#include "glm/ext.hpp"
-#include "glm/gtx/rotate_vector.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "ext.hpp"
+#include "gtx/rotate_vector.hpp"
+#include "gtc/type_ptr.hpp"
 
 #include "Window.h"
 #include "Shader.h"
@@ -45,12 +47,13 @@ int main()
 	Window mainWindow(width,height);
 
 #ifdef LINUX
-	// this needs to be after the context creation, otherwise it GLEW will crash
+	// initialise GLEW
+	// it needs to be after the context creation, otherwise it GLEW will crash
 	//std::cout <<"linux \n";
 	glewExperimental = GL_TRUE;
 	glewInit();
 //	GLenum error = glGetError();
-#endif
+#endif // LINUX
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_MULTISAMPLE);
@@ -61,17 +64,14 @@ int main()
 	glUseProgram(test.getShaderProgram());
 
 	glViewport(0,0,width, height);
+	srandom(time(NULL));
 
-	MixBuilder builder = MixBuilder();
+	MixBuilder builder = MixBuilder(4);
 	Building building = builder.getBuilding();
-	Mesh cube = Mesh("models/cube.obj","cube");
-//	cube.write();
-	int bufferSize = building.amountVertices();// + cube.getAmountVertexData();
+	int bufferSize = building.amountVertices();
 
 	Buffer buffer(bufferSize, sizeof(float)); // generate vbo buffer
 	building.setBufferIndex(buffer.append((void *) building.getVertices(), building.amountVertices(), Buffer::VERTEX));
-
-//	cube.setBufferIndex(buffer.append((void*) &cube.getVertices(), cube.getAmountVertexData(), Buffer::VERTEX));
 
 	// pass the vertex data to the shader
 	GLint pos = glGetAttribLocation(test.getShaderProgram(), "VertexPosition");
@@ -79,11 +79,6 @@ int main()
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	buffer.append((void *) building.getNormals(), building.amountVertices(), Buffer::NORMAL);
-//	buffer.append((void *) &cube.getNormals(), cube.getAmountVertexData(), Buffer::NORMAL);
-
-
-//	cube.write();
-
 
 	// pass the normals to the shader
 	GLint n = glGetAttribLocation(test.getShaderProgram(), "VertexNormal");
@@ -102,7 +97,6 @@ int main()
 
 	TrackballCamera mainCamera = TrackballCamera();
 	mainCamera.setInitialMousePos(0,0);
-	// Needed for the fixed camera
 	mainCamera.setTarget(0.0f,0.0f,0.0f);
 	mainCamera.setEye(0.0f, 2.0f, 5.0f);
 
@@ -119,21 +113,41 @@ int main()
 			switch (event.type)
 			{
 				case SDL_QUIT:
+				{
 					quit = true;
-					Mesh::write(building.getVerticesContainer(), building.getNormalsContainer());
-				 break;
+					break;
+				}
 				case SDL_WINDOWEVENT:
+				{
 					SDL_GetWindowSize(mainWindow.getWindow(), &width, &height);
 					mainWindow.setWindowSize(width, height);
 					glViewport(0,0,width, height);
 					projection = glm::perspective(glm::radians(60.0f),
 					static_cast<float>(mainWindow.getWidth())/static_cast<float>(mainWindow.getHeight()), 0.1f, 100.0f);
 					break;
+				}
 				case SDL_MOUSEBUTTONDOWN:
 				case SDL_MOUSEBUTTONUP:
+				{
 					mainCamera.handleMouseClick(event.button.x, event.button.y, event.button.button, event.type, 0);
 					break;
-				default: break;
+				}
+				default: { break; }
+			}
+
+			switch (event.key.keysym.sym)
+			{
+				case SDLK_ESCAPE:
+				{
+					quit = true;
+					break;
+				}
+				case SDLK_s:
+				{
+					Mesh::write(building.getVerticesContainer(), building.getNormalsContainer(), "out.obj");
+					break;
+				}
+				default:break;
 			}
 			mainCamera.handleMouseMove(event.button.x, event.button.y);
 		}
