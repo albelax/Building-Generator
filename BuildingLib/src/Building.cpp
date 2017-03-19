@@ -135,10 +135,8 @@ bool Building::combinearrays(Mesh const & _mesh, Object * _object, Floor const  
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::string Building::selectFolder(GenerationMode const _MODE, element const _ELEMENT) const
+std::string Building::selectFromFolder(GenerationMode const _MODE, element const _ELEMENT) const
 {
-	/// select the assets from a specific style, if the mode is MIX the style will keep changing
-	/// otherwise it won't
 	std::vector<std::string> directories;
 	std::vector<std::string> files;
 	srandom (time(NULL));
@@ -224,7 +222,7 @@ void Building::makeBase()
 	m_walls = Walls(m_rule);
 	m_corners = Corner(m_walls);
 	Mesh wall_mesh = Mesh("models/my_Building/Walls/Plane.obj", "wall");
-	Mesh corner_mesh = Mesh(selectFolder(m_mode, element::CORNER), "corner");
+	Mesh corner_mesh = Mesh(selectFromFolder(m_mode, element::CORNER), "corner");
 
 	// load the exception of the same corner
 	std::string corner_exception_address;
@@ -273,7 +271,7 @@ void Building::makeBase()
 
 void Building::addDecorations()
 {
-	Mesh decoration = Mesh(selectFolder(m_mode, element::DECORATION), "deco");
+	Mesh decoration = Mesh(selectFromFolder(m_mode, element::DECORATION), "deco");
 	unsigned int deco_size = decoration.getAmountVertexData() * m_walls.getMVs().size();
 	m_vertices.resize(m_vertices.size() + (deco_size*(m_height-1)));
 	m_normals.resize(m_normals.size() + (deco_size*(m_height-1)));
@@ -284,7 +282,7 @@ void Building::addDecorations()
 
 void Building::addWindows()
 {
-	Mesh window = Mesh(selectFolder(m_mode, element::WINDOW), "win");
+	Mesh window = Mesh(selectFromFolder(m_mode, element::WINDOW), "win");
 	unsigned int window_size = window.getAmountVertexData() * m_walls.getMVs().size();
 	m_vertices.resize(m_vertices.size() + (window_size*(m_height-1))); // - 1 because it doesn't include the ground floor
 	m_normals.resize(m_normals.size() + (window_size*(m_height-1)));
@@ -296,7 +294,7 @@ void Building::addWindows()
 void Building::addFront()
 {
 	/// places the entrance of the building, it doesn't need to repeat
-	Mesh front = Mesh(selectFolder(m_mode, element::FRONT), "front");
+	Mesh front = Mesh(selectFromFolder(m_mode, element::FRONT), "front");
 	unsigned int front_size = front.getAmountVertexData();
 	m_vertices.resize(m_vertices.size() + (front_size));
 	m_normals.resize(m_normals.size() + (front_size));
@@ -311,7 +309,7 @@ void Building::addRoof()
 	Mesh inside = Mesh("models/cube.obj", "cube");
 	Mesh cornerException = Mesh("models/roof_corner_exception.obj", "exception");
 	Mesh corner = Mesh("models/roof_corner.obj", "corner");
-	Mesh edge = Mesh(selectFolder(m_mode, element::ROOF), "roofEdge");
+	Mesh edge = Mesh(selectFromFolder(m_mode, element::ROOF), "roofEdge");
 	/// need to construct the corners of the roof, I will create a temporary instance
 	/// of the corner class, I will first construct it with the exceptions
 	/// the reconstruct it with the normal cases
@@ -338,7 +336,7 @@ void Building::addRoof()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Building::splitCorners(std::vector<glm::mat4> * o_standard, std::vector<glm::mat4> * o_exception)
+void Building::splitCorners(std::vector<glm::mat4> * io_standard, std::vector<glm::mat4> * io_exception)
 {
 	/// splits the concave corners from the convex ones using the exceptions and the MVs stored
 	/// in the m_corner object, the function doesn't return anything,
@@ -347,12 +345,12 @@ void Building::splitCorners(std::vector<glm::mat4> * o_standard, std::vector<glm
 	{
 		if (m_corners.getExceptions()[i] == 1)
 		{
-			o_exception->push_back(m_corners.getMVs()[i]);
+			io_exception->push_back(m_corners.getMVs()[i]);
 		}
 
 		else
 		{
-			o_standard->push_back(m_corners.getMVs()[i]);
+			io_standard->push_back(m_corners.getMVs()[i]);
 		}
 	}
 }
