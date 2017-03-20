@@ -87,6 +87,12 @@ bool Building::combinearrays(Mesh const & _mesh, Object * _object, Floor const  
 	static unsigned int previousSize = m_vertices.size();
 	static int lastIndex;
 
+	if (m_index == 0)
+	{
+		vertices_it = m_vertices.begin();
+		normals_it = m_normals.begin();
+		m_index++;
+	}
 	if (m_vertices.size() > previousSize)
 	{
 		vertices_it = m_vertices.begin() + lastIndex;
@@ -273,9 +279,10 @@ void Building::makeBase()
 void Building::addDecorations()
 {
 	Mesh decoration = Mesh(selectFromFolder(m_mode, element::DECORATION), "deco");
-	unsigned int deco_size = decoration.getAmountVertexData() * m_walls.getMVs().size();
-	m_vertices.resize(m_vertices.size() + (deco_size*(m_height-1)));
-	m_normals.resize(m_normals.size() + (deco_size*(m_height-1)));
+	unsigned int deco_size = decoration.getAmountVertexData() * m_walls.getMVs().size() *m_height;
+
+	m_vertices.resize(m_vertices.size() + deco_size);
+	m_normals.resize(m_normals.size()+ deco_size);
 	combinearrays(decoration, dynamic_cast<Object*>(&m_walls), Floor::NOT_BOTTOM);
 }
 

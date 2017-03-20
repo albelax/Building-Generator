@@ -70,10 +70,14 @@ int main()
 	MixBuilder mixBuilder = MixBuilder((random()%3)+2);
 	Building mixBuilding = mixBuilder.getBuilding();
 
-	int bufferSize = mixBuilding.amountVertices();
+	MixBuilder mixBuilder2 = MixBuilder((random()%3)+2);
+	Building mixBuilding2 = mixBuilder2.getBuilding();
+
+	int bufferSize = mixBuilding.amountVertices() + mixBuilding2.amountVertices();
 
 	Buffer buffer(bufferSize, sizeof(float)); // generate vbo buffer
 	mixBuilding.setBufferIndex(buffer.append((void *) mixBuilding.getVertices(), mixBuilding.amountVertices(), Buffer::VERTEX));
+	mixBuilding2.setBufferIndex(buffer.append((void *) mixBuilding2.getVertices(), mixBuilding2.amountVertices(), Buffer::VERTEX));
 
 	// pass the vertex data to the shader
 	GLint pos = glGetAttribLocation(test.getShaderProgram(), "VertexPosition");
@@ -81,6 +85,7 @@ int main()
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	buffer.append((void *) mixBuilding.getNormals(), mixBuilding.amountVertices(), Buffer::NORMAL);
+	buffer.append((void *) mixBuilding2.getNormals(), mixBuilding2.amountVertices(), Buffer::NORMAL);
 
 	// pass the normals to the shader
 	GLint n = glGetAttribLocation(test.getShaderProgram(), "VertexNormal");
@@ -164,6 +169,14 @@ int main()
 		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(MV));
 		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
 		glDrawArrays(GL_TRIANGLES, mixBuilding.getBufferIndex()/3, mixBuilding.amountVertices()/3);
+
+		MV = glm::translate(MV, glm::vec3(0,0,5.5f));
+		MVP = projection * mainCamera.viewMatrix() * MV;
+		N = glm::mat3(glm::inverse(glm::transpose(MV)));
+		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(MV));
+		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
+		glDrawArrays(GL_TRIANGLES, mixBuilding2.getBufferIndex()/3, mixBuilding2.amountVertices()/3);
 
 		SDL_GL_SwapWindow(mainWindow.getWindow());
 	}

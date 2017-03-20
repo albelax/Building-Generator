@@ -100,6 +100,7 @@ private:
 
 	int m_height;
 
+	int m_index = 0;
 	/// rule that determines the shape of the base
 	std::string m_rule;
 
