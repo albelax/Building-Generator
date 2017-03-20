@@ -16,7 +16,7 @@ void Building::generateRule()
 {
 	// for now I just have a few rules,
 	// maybe at some point I will actually generate them randomly
-	std::vector<std::string> rules = { "ruld", "ruuldd", "rruuullldddr", "rrrruuulldld", "rdruuullllldddru" };
+	std::vector<std::string> rules = { "ruuldd", "rruuullldddr", "rrrruuulldld", "rdruuullllldddru" };
 	srandom (time(NULL));
 	m_rule = rules[random() % rules.size()];
 }
@@ -130,6 +130,7 @@ bool Building::combinearrays(Mesh const & _mesh, Object * _object, Floor const  
 	}
 	// keeps track of the last index, just in case the std::vector is reallocated
 	lastIndex = vertices_it - m_vertices.begin();
+	previousSize = m_vertices.size();
 	return success;
 }
 
@@ -221,7 +222,7 @@ void Building::makeBase()
 {
 	m_walls = Walls(m_rule);
 	m_corners = Corner(m_walls);
-	Mesh wall_mesh = Mesh("models/my_Building/Walls/Plane.obj", "wall");
+	Mesh wall_mesh = Mesh("models/default./Plane.obj", "wall");
 	Mesh corner_mesh = Mesh(selectFromFolder(m_mode, element::CORNER), "corner");
 
 	// load the exception of the same corner
@@ -241,7 +242,7 @@ void Building::makeBase()
 
 	else
 	{
-		corner_exception_address = "models/my_Building/Corners/cutCorner.obj";
+		corner_exception_address = "models/myBuilding/Corners/cutCorner.obj";
 	}
 
 	// split the matrices of concave and covex corners in two different vectors
@@ -306,10 +307,10 @@ void Building::addFront()
 void Building::addRoof()
 {
 	Roof roof = Roof(m_walls, m_corners);
-	Mesh inside = Mesh("models/cube.obj", "cube");
-	Mesh cornerException = Mesh("models/roof_corner_exception.obj", "exception");
-	Mesh corner = Mesh("models/roof_corner.obj", "corner");
+	Mesh inside = Mesh("models/default./cube.obj", "cube");
+	Mesh corner = Mesh("models/default./roof_corner.obj", "corner");
 	Mesh edge = Mesh(selectFromFolder(m_mode, element::ROOF), "roofEdge");
+	Mesh cornerException = Mesh("models/default./roof_corner_exception.obj", "exception");
 	/// need to construct the corners of the roof, I will create a temporary instance
 	/// of the corner class, I will first construct it with the exceptions
 	/// the reconstruct it with the normal cases
@@ -328,10 +329,10 @@ void Building::addRoof()
 	unsigned int tot = m_vertices.size() + roof_size + roofEdges_size + cornerException_size + corner_size;
 	m_vertices.resize(tot);
 	m_normals.resize(tot);
-	combinearrays(inside, dynamic_cast<Object*>(&roof), Floor::TOP); // fills the roof
-	combinearrays(edge, dynamic_cast<Object*>(&m_walls), Floor::TOP); // place the roof only at the edges
-	combinearrays(cornerException, dynamic_cast<Object*>(&exception), Floor::TOP);
-	combinearrays(corner, dynamic_cast<Object*>(&corners), Floor::TOP);
+	combinearrays(inside, dynamic_cast<Object*>( &roof ), Floor::TOP); // fills the roof
+	combinearrays(edge, dynamic_cast<Object*>( &m_walls ), Floor::TOP); // place the roof only at the edges
+	combinearrays(cornerException, dynamic_cast<Object*>( &exception ), Floor::TOP);
+	combinearrays(corner, dynamic_cast<Object*>( &corners ), Floor::TOP);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -343,7 +344,7 @@ void Building::splitCorners(std::vector<glm::mat4> * io_standard, std::vector<gl
 	/// however it will modify the Inputs
 	for (unsigned int i = 0; i < m_corners.getExceptions().size(); ++i)
 	{
-		if (m_corners.getExceptions()[i] == 1)
+		if ( m_corners.getExceptions()[i] == 1 )
 		{
 			io_exception->push_back(m_corners.getMVs()[i]);
 		}
@@ -359,6 +360,14 @@ void Building::splitCorners(std::vector<glm::mat4> * io_standard, std::vector<gl
 
 void Building::setHeight(int _height)
 {
-	if (_height <= 1) { m_height = 1; }
+	if ( _height <= 1 ) { m_height = 1; }
 	else { m_height = _height; }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void Building::clear()
+{
+	m_walls.clear();
+	m_corners.clear();
 }

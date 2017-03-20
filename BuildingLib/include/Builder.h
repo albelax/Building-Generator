@@ -18,7 +18,7 @@ public:
 	Builder(int _height = 4);
 	~Builder();
 	/// \brief returns the building constructed
-	Building getBuilding();
+	Building & getBuilding();
 };
 
 #endif // BUILDER_H

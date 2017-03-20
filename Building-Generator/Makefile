@@ -1066,6 +1066,13 @@ obj/main.o: src/main.cpp /usr/local/include/GL/glew.h \
 		include/Shader.h \
 		include/Buffer.h \
 		../BuildingLib/include/Building.h \
+		../BuildingLib/include/Mesh.h \
+		../BuildingLib/include/Object.h \
+		../glm/gtx/matrix_decompose.hpp \
+		../glm/gtx/matrix_decompose.inl \
+		../BuildingLib/include/Walls.h \
+		../BuildingLib/include/Corner.h \
+		../BuildingLib/include/Roof.h \
 		/usr/local/include/gtest/gtest.h \
 		/usr/local/include/gtest/internal/gtest-internal.h \
 		/usr/local/include/gtest/internal/gtest-port.h \
@@ -1088,17 +1095,11 @@ obj/main.o: src/main.cpp /usr/local/include/GL/glew.h \
 		/usr/local/include/gtest/gtest-test-part.h \
 		/usr/local/include/gtest/gtest-typed-test.h \
 		/usr/local/include/gtest/gtest_pred_impl.h \
-		../BuildingLib/include/Mesh.h \
-		../BuildingLib/include/Object.h \
-		../glm/gtx/matrix_decompose.hpp \
-		../glm/gtx/matrix_decompose.inl \
-		../BuildingLib/include/Walls.h \
-		../BuildingLib/include/Corner.h \
-		../BuildingLib/include/Roof.h \
 		include/TrackballCamera.h \
 		include/Camera.h \
 		../BuildingLib/include/Builder.h \
-		../BuildingLib/include/MixBuilder.h
+		../BuildingLib/include/MixBuilder.h \
+		../BuildingLib/include/WindowsOnlyBuilder.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/main.o src/main.cpp
 
 obj/Shader.o: src/Shader.cpp include/Shader.h \

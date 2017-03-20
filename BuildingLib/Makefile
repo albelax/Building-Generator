@@ -14,7 +14,7 @@ CC            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 DEFINES       = -DQT_QML_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -g -fPIC -Wall -W $(DEFINES)
-CXXFLAGS      = -pipe -stdlib=libc++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -arch x86_64 -msse -msse2 -msse3 -I/usr/local/include/SDL2 -D_THREAD_SAFE -g -fPIC -std=gnu++11 -Wall -W $(DEFINES)
+CXXFLAGS      = -pipe -stdlib=libc++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -arch x86_64 -msse -msse2 -msse3 -g -fPIC -std=gnu++11 -Wall -W $(DEFINES)
 INCPATH       = -I. -Iinclude -I/usr/local/include -I/Users/albertolascala/Building-Generator/glm -I/Users/albertolascala/Qt/5.8/clang_64/lib/QtGui.framework/Headers -I/Users/albertolascala/Qt/5.8/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I/Users/albertolascala/Qt/5.8/clang_64/mkspecs/macx-clang -F/Users/albertolascala/Qt/5.8/clang_64/lib
 QMAKE         = /Users/albertolascala/Qt/5.8/clang_64/bin/qmake
 DEL_FILE      = rm -f
@@ -52,7 +52,9 @@ SOURCES       = src/Builder.cpp \
 		src/MixBuilder.cpp \
 		src/Object.cpp \
 		src/Roof.cpp \
-		src/Walls.cpp 
+		src/SameStyleBuilder.cpp \
+		src/Walls.cpp \
+		src/WindowsOnlyBuilder.cpp 
 OBJECTS       = obj/Builder.o \
 		obj/Building.o \
 		obj/Corner.o \
@@ -60,7 +62,9 @@ OBJECTS       = obj/Builder.o \
 		obj/MixBuilder.o \
 		obj/Object.o \
 		obj/Roof.o \
-		obj/Walls.o
+		obj/SameStyleBuilder.o \
+		obj/Walls.o \
+		obj/WindowsOnlyBuilder.o
 DIST          = .qmake.stash \
 		BuildingLib.pro include/Builder.h \
 		include/Building.h \
@@ -69,14 +73,18 @@ DIST          = .qmake.stash \
 		include/MixBuilder.h \
 		include/Object.h \
 		include/Roof.h \
-		include/Walls.h src/Builder.cpp \
+		include/SameStyleBuilder.h \
+		include/Walls.h \
+		include/WindowsOnlyBuilder.h src/Builder.cpp \
 		src/Building.cpp \
 		src/Corner.cpp \
 		src/Mesh.cpp \
 		src/MixBuilder.cpp \
 		src/Object.cpp \
 		src/Roof.cpp \
-		src/Walls.cpp
+		src/SameStyleBuilder.cpp \
+		src/Walls.cpp \
+		src/WindowsOnlyBuilder.cpp
 QMAKE_TARGET  = BuildingLib
 DESTDIR       = lib/
 TARGET        = libBuildingLib.a
@@ -468,8 +476,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /Users/albertolascala/Qt/5.8/clang_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents include/Builder.h include/Building.h include/Corner.h include/Mesh.h include/MixBuilder.h include/Object.h include/Roof.h include/Walls.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/Builder.cpp src/Building.cpp src/Corner.cpp src/Mesh.cpp src/MixBuilder.cpp src/Object.cpp src/Roof.cpp src/Walls.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents include/Builder.h include/Building.h include/Corner.h include/Mesh.h include/MixBuilder.h include/Object.h include/Roof.h include/SameStyleBuilder.h include/Walls.h include/WindowsOnlyBuilder.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/Builder.cpp src/Building.cpp src/Corner.cpp src/Mesh.cpp src/MixBuilder.cpp src/Object.cpp src/Roof.cpp src/SameStyleBuilder.cpp src/Walls.cpp src/WindowsOnlyBuilder.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -499,7 +507,7 @@ compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: /Users/albertolascala/Qt/5.8/clang_64/mkspecs/features/data/dummy.cpp
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -pipe -stdlib=libc++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -arch x86_64 -msse -msse2 -msse3 -I/usr/local/include/SDL2 -D_THREAD_SAFE -g -fPIC -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /Users/albertolascala/Qt/5.8/clang_64/mkspecs/features/data/dummy.cpp
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -pipe -stdlib=libc++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -arch x86_64 -msse -msse2 -msse3 -g -fPIC -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /Users/albertolascala/Qt/5.8/clang_64/mkspecs/features/data/dummy.cpp
 
 compiler_moc_header_make_all:
 compiler_moc_header_clean:
@@ -519,28 +527,6 @@ compiler_clean: compiler_moc_predefs_clean
 
 obj/Builder.o: src/Builder.cpp include/Builder.h \
 		include/Building.h \
-		/usr/local/include/gtest/gtest.h \
-		/usr/local/include/gtest/internal/gtest-internal.h \
-		/usr/local/include/gtest/internal/gtest-port.h \
-		/usr/local/include/gtest/internal/gtest-port-arch.h \
-		/usr/local/include/gtest/internal/custom/gtest-port.h \
-		/usr/local/include/gtest/internal/gtest-tuple.h \
-		/usr/local/include/gtest/gtest-message.h \
-		/usr/local/include/gtest/internal/gtest-string.h \
-		/usr/local/include/gtest/internal/gtest-filepath.h \
-		/usr/local/include/gtest/internal/gtest-type-util.h \
-		/usr/local/include/gtest/gtest-death-test.h \
-		/usr/local/include/gtest/internal/gtest-death-test-internal.h \
-		/usr/local/include/gtest/gtest-param-test.h \
-		/usr/local/include/gtest/internal/gtest-param-util.h \
-		/usr/local/include/gtest/internal/gtest-linked_ptr.h \
-		/usr/local/include/gtest/gtest-printers.h \
-		/usr/local/include/gtest/internal/custom/gtest-printers.h \
-		/usr/local/include/gtest/internal/gtest-param-util-generated.h \
-		/usr/local/include/gtest/gtest_prod.h \
-		/usr/local/include/gtest/gtest-test-part.h \
-		/usr/local/include/gtest/gtest-typed-test.h \
-		/usr/local/include/gtest/gtest_pred_impl.h \
 		/Users/albertolascala/Building-Generator/glm/glm.hpp \
 		/Users/albertolascala/Building-Generator/glm/detail/_fixes.hpp \
 		/Users/albertolascala/Building-Generator/glm/fwd.hpp \
@@ -771,32 +757,32 @@ obj/Builder.o: src/Builder.cpp include/Builder.h \
 		/Users/albertolascala/Building-Generator/glm/gtx/matrix_decompose.inl \
 		include/Walls.h \
 		include/Corner.h \
-		include/Roof.h
+		include/Roof.h \
+		/usr/local/include/gtest/gtest.h \
+		/usr/local/include/gtest/internal/gtest-internal.h \
+		/usr/local/include/gtest/internal/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-port-arch.h \
+		/usr/local/include/gtest/internal/custom/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-tuple.h \
+		/usr/local/include/gtest/gtest-message.h \
+		/usr/local/include/gtest/internal/gtest-string.h \
+		/usr/local/include/gtest/internal/gtest-filepath.h \
+		/usr/local/include/gtest/internal/gtest-type-util.h \
+		/usr/local/include/gtest/gtest-death-test.h \
+		/usr/local/include/gtest/internal/gtest-death-test-internal.h \
+		/usr/local/include/gtest/gtest-param-test.h \
+		/usr/local/include/gtest/internal/gtest-param-util.h \
+		/usr/local/include/gtest/internal/gtest-linked_ptr.h \
+		/usr/local/include/gtest/gtest-printers.h \
+		/usr/local/include/gtest/internal/custom/gtest-printers.h \
+		/usr/local/include/gtest/internal/gtest-param-util-generated.h \
+		/usr/local/include/gtest/gtest_prod.h \
+		/usr/local/include/gtest/gtest-test-part.h \
+		/usr/local/include/gtest/gtest-typed-test.h \
+		/usr/local/include/gtest/gtest_pred_impl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Builder.o src/Builder.cpp
 
 obj/Building.o: src/Building.cpp include/Building.h \
-		/usr/local/include/gtest/gtest.h \
-		/usr/local/include/gtest/internal/gtest-internal.h \
-		/usr/local/include/gtest/internal/gtest-port.h \
-		/usr/local/include/gtest/internal/gtest-port-arch.h \
-		/usr/local/include/gtest/internal/custom/gtest-port.h \
-		/usr/local/include/gtest/internal/gtest-tuple.h \
-		/usr/local/include/gtest/gtest-message.h \
-		/usr/local/include/gtest/internal/gtest-string.h \
-		/usr/local/include/gtest/internal/gtest-filepath.h \
-		/usr/local/include/gtest/internal/gtest-type-util.h \
-		/usr/local/include/gtest/gtest-death-test.h \
-		/usr/local/include/gtest/internal/gtest-death-test-internal.h \
-		/usr/local/include/gtest/gtest-param-test.h \
-		/usr/local/include/gtest/internal/gtest-param-util.h \
-		/usr/local/include/gtest/internal/gtest-linked_ptr.h \
-		/usr/local/include/gtest/gtest-printers.h \
-		/usr/local/include/gtest/internal/custom/gtest-printers.h \
-		/usr/local/include/gtest/internal/gtest-param-util-generated.h \
-		/usr/local/include/gtest/gtest_prod.h \
-		/usr/local/include/gtest/gtest-test-part.h \
-		/usr/local/include/gtest/gtest-typed-test.h \
-		/usr/local/include/gtest/gtest_pred_impl.h \
 		/Users/albertolascala/Building-Generator/glm/glm.hpp \
 		/Users/albertolascala/Building-Generator/glm/detail/_fixes.hpp \
 		/Users/albertolascala/Building-Generator/glm/fwd.hpp \
@@ -1027,7 +1013,29 @@ obj/Building.o: src/Building.cpp include/Building.h \
 		/Users/albertolascala/Building-Generator/glm/gtx/matrix_decompose.inl \
 		include/Walls.h \
 		include/Corner.h \
-		include/Roof.h
+		include/Roof.h \
+		/usr/local/include/gtest/gtest.h \
+		/usr/local/include/gtest/internal/gtest-internal.h \
+		/usr/local/include/gtest/internal/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-port-arch.h \
+		/usr/local/include/gtest/internal/custom/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-tuple.h \
+		/usr/local/include/gtest/gtest-message.h \
+		/usr/local/include/gtest/internal/gtest-string.h \
+		/usr/local/include/gtest/internal/gtest-filepath.h \
+		/usr/local/include/gtest/internal/gtest-type-util.h \
+		/usr/local/include/gtest/gtest-death-test.h \
+		/usr/local/include/gtest/internal/gtest-death-test-internal.h \
+		/usr/local/include/gtest/gtest-param-test.h \
+		/usr/local/include/gtest/internal/gtest-param-util.h \
+		/usr/local/include/gtest/internal/gtest-linked_ptr.h \
+		/usr/local/include/gtest/gtest-printers.h \
+		/usr/local/include/gtest/internal/custom/gtest-printers.h \
+		/usr/local/include/gtest/internal/gtest-param-util-generated.h \
+		/usr/local/include/gtest/gtest_prod.h \
+		/usr/local/include/gtest/gtest-test-part.h \
+		/usr/local/include/gtest/gtest-typed-test.h \
+		/usr/local/include/gtest/gtest_pred_impl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Building.o src/Building.cpp
 
 obj/Corner.o: src/Corner.cpp include/Corner.h \
@@ -1360,28 +1368,6 @@ obj/Mesh.o: src/Mesh.cpp include/Mesh.h \
 obj/MixBuilder.o: src/MixBuilder.cpp include/MixBuilder.h \
 		include/Builder.h \
 		include/Building.h \
-		/usr/local/include/gtest/gtest.h \
-		/usr/local/include/gtest/internal/gtest-internal.h \
-		/usr/local/include/gtest/internal/gtest-port.h \
-		/usr/local/include/gtest/internal/gtest-port-arch.h \
-		/usr/local/include/gtest/internal/custom/gtest-port.h \
-		/usr/local/include/gtest/internal/gtest-tuple.h \
-		/usr/local/include/gtest/gtest-message.h \
-		/usr/local/include/gtest/internal/gtest-string.h \
-		/usr/local/include/gtest/internal/gtest-filepath.h \
-		/usr/local/include/gtest/internal/gtest-type-util.h \
-		/usr/local/include/gtest/gtest-death-test.h \
-		/usr/local/include/gtest/internal/gtest-death-test-internal.h \
-		/usr/local/include/gtest/gtest-param-test.h \
-		/usr/local/include/gtest/internal/gtest-param-util.h \
-		/usr/local/include/gtest/internal/gtest-linked_ptr.h \
-		/usr/local/include/gtest/gtest-printers.h \
-		/usr/local/include/gtest/internal/custom/gtest-printers.h \
-		/usr/local/include/gtest/internal/gtest-param-util-generated.h \
-		/usr/local/include/gtest/gtest_prod.h \
-		/usr/local/include/gtest/gtest-test-part.h \
-		/usr/local/include/gtest/gtest-typed-test.h \
-		/usr/local/include/gtest/gtest_pred_impl.h \
 		/Users/albertolascala/Building-Generator/glm/glm.hpp \
 		/Users/albertolascala/Building-Generator/glm/detail/_fixes.hpp \
 		/Users/albertolascala/Building-Generator/glm/fwd.hpp \
@@ -1612,7 +1598,29 @@ obj/MixBuilder.o: src/MixBuilder.cpp include/MixBuilder.h \
 		/Users/albertolascala/Building-Generator/glm/gtx/matrix_decompose.inl \
 		include/Walls.h \
 		include/Corner.h \
-		include/Roof.h
+		include/Roof.h \
+		/usr/local/include/gtest/gtest.h \
+		/usr/local/include/gtest/internal/gtest-internal.h \
+		/usr/local/include/gtest/internal/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-port-arch.h \
+		/usr/local/include/gtest/internal/custom/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-tuple.h \
+		/usr/local/include/gtest/gtest-message.h \
+		/usr/local/include/gtest/internal/gtest-string.h \
+		/usr/local/include/gtest/internal/gtest-filepath.h \
+		/usr/local/include/gtest/internal/gtest-type-util.h \
+		/usr/local/include/gtest/gtest-death-test.h \
+		/usr/local/include/gtest/internal/gtest-death-test-internal.h \
+		/usr/local/include/gtest/gtest-param-test.h \
+		/usr/local/include/gtest/internal/gtest-param-util.h \
+		/usr/local/include/gtest/internal/gtest-linked_ptr.h \
+		/usr/local/include/gtest/gtest-printers.h \
+		/usr/local/include/gtest/internal/custom/gtest-printers.h \
+		/usr/local/include/gtest/internal/gtest-param-util-generated.h \
+		/usr/local/include/gtest/gtest_prod.h \
+		/usr/local/include/gtest/gtest-test-part.h \
+		/usr/local/include/gtest/gtest-typed-test.h \
+		/usr/local/include/gtest/gtest_pred_impl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/MixBuilder.o src/MixBuilder.cpp
 
 obj/Object.o: src/Object.cpp include/Object.h \
@@ -1846,6 +1854,28 @@ obj/Object.o: src/Object.cpp include/Object.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Object.o src/Object.cpp
 
 obj/Roof.o: src/Roof.cpp include/Roof.h \
+		/usr/local/include/gtest/gtest.h \
+		/usr/local/include/gtest/internal/gtest-internal.h \
+		/usr/local/include/gtest/internal/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-port-arch.h \
+		/usr/local/include/gtest/internal/custom/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-tuple.h \
+		/usr/local/include/gtest/gtest-message.h \
+		/usr/local/include/gtest/internal/gtest-string.h \
+		/usr/local/include/gtest/internal/gtest-filepath.h \
+		/usr/local/include/gtest/internal/gtest-type-util.h \
+		/usr/local/include/gtest/gtest-death-test.h \
+		/usr/local/include/gtest/internal/gtest-death-test-internal.h \
+		/usr/local/include/gtest/gtest-param-test.h \
+		/usr/local/include/gtest/internal/gtest-param-util.h \
+		/usr/local/include/gtest/internal/gtest-linked_ptr.h \
+		/usr/local/include/gtest/gtest-printers.h \
+		/usr/local/include/gtest/internal/custom/gtest-printers.h \
+		/usr/local/include/gtest/internal/gtest-param-util-generated.h \
+		/usr/local/include/gtest/gtest_prod.h \
+		/usr/local/include/gtest/gtest-test-part.h \
+		/usr/local/include/gtest/gtest-typed-test.h \
+		/usr/local/include/gtest/gtest_pred_impl.h \
 		include/Object.h \
 		include/Mesh.h \
 		/Users/albertolascala/Building-Generator/glm/glm.hpp \
@@ -2078,6 +2108,264 @@ obj/Roof.o: src/Roof.cpp include/Roof.h \
 		include/Walls.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Roof.o src/Roof.cpp
 
+obj/SameStyleBuilder.o: src/SameStyleBuilder.cpp include/SameStyleBuilder.h \
+		include/Builder.h \
+		include/Building.h \
+		/Users/albertolascala/Building-Generator/glm/glm.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/_fixes.hpp \
+		/Users/albertolascala/Building-Generator/glm/fwd.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_int.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/setup.hpp \
+		/Users/albertolascala/Building-Generator/glm/simd/platform.h \
+		/Users/albertolascala/Building-Generator/glm/detail/type_float.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/precision.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat.hpp \
+		/Users/albertolascala/Building-Generator/glm/vec2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/_swizzle.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/_swizzle_func.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec2.inl \
+		/Users/albertolascala/Building-Generator/glm/vec3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec3.inl \
+		/Users/albertolascala/Building-Generator/glm/vec4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec4.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec4_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/mat2x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x2.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_matrix.hpp \
+		/Users/albertolascala/Building-Generator/glm/mat2x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x3.inl \
+		/Users/albertolascala/Building-Generator/glm/mat2x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x4.inl \
+		/Users/albertolascala/Building-Generator/glm/mat3x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x2.inl \
+		/Users/albertolascala/Building-Generator/glm/mat3x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x3.inl \
+		/Users/albertolascala/Building-Generator/glm/mat3x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x4.inl \
+		/Users/albertolascala/Building-Generator/glm/mat4x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x2.inl \
+		/Users/albertolascala/Building-Generator/glm/mat4x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x3.inl \
+		/Users/albertolascala/Building-Generator/glm/mat4x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x4.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x4_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_matrix.inl \
+		/Users/albertolascala/Building-Generator/glm/geometric.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_geometric.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_geometric.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_exponential.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec1.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec1.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_exponential.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_vector_relational.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_vector_relational.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_vector_relational_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/_vectorize.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_exponential_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/simd/exponential.h \
+		/Users/albertolascala/Building-Generator/glm/detail/func_common.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_common.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_common_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/simd/common.h \
+		/Users/albertolascala/Building-Generator/glm/detail/func_geometric_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/simd/geometric.h \
+		/Users/albertolascala/Building-Generator/glm/detail/func_matrix_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/simd/matrix.h \
+		/Users/albertolascala/Building-Generator/glm/trigonometric.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_trigonometric.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_trigonometric.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_trigonometric_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/exponential.hpp \
+		/Users/albertolascala/Building-Generator/glm/common.hpp \
+		/Users/albertolascala/Building-Generator/glm/packing.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_packing.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_packing.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/type_half.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_half.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_packing_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/matrix.hpp \
+		/Users/albertolascala/Building-Generator/glm/vector_relational.hpp \
+		/Users/albertolascala/Building-Generator/glm/integer.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_integer.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_integer.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_integer_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/simd/integer.h \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_transform.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/constants.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/constants.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_transform.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/type_ptr.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/quaternion.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/quaternion.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/quaternion_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/type_ptr.inl \
+		/Users/albertolascala/Building-Generator/glm/ext.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/bitfield.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/bitfield.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/color_space.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/color_space.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/epsilon.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/epsilon.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/functions.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/functions.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/integer.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/integer.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_access.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_access.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_integer.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_inverse.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_inverse.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/noise.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/_noise.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/noise.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/packing.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/type_precision.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/vec1.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/vec1.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/type_precision.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/packing.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/random.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/random.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/reciprocal.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/reciprocal.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/round.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/round.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/ulp.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/ulp.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/type_aligned.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/associated_min_max.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/associated_min_max.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/bit.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/bit.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/closest_point.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/closest_point.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/color_space.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/color_space_YCoCg.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/color_space_YCoCg.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/compatibility.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/compatibility.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/component_wise.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/component_wise.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/dual_quaternion.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/dual_quaternion.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/euler_angles.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/euler_angles.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/extend.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/extend.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/extended_min_max.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/extended_min_max.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_exponential.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_exponential.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_square_root.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_square_root.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_trigonometry.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_trigonometry.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/gradient_paint.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/optimum_pow.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/optimum_pow.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/gradient_paint.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/handed_coordinate_space.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/handed_coordinate_space.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/integer.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/intersect.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/vector_query.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/vector_query.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/intersect.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/log_base.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/log_base.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_cross_product.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_cross_product.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_interpolation.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_interpolation.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_major_storage.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_major_storage.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_operation.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_operation.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_query.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_query.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/mixed_product.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/mixed_product.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/norm.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/quaternion.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/norm.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/normal.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/normal.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/normalize_dot.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/normalize_dot.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/number_precision.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/number_precision.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/orthonormalize.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/orthonormalize.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/perpendicular.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/projection.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/projection.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/perpendicular.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/polar_coordinates.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/polar_coordinates.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/raw_data.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/raw_data.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/rotate_vector.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/transform.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/transform.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/rotate_vector.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/spline.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/spline.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/std_based_type.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/std_based_type.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/string_cast.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/string_cast.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/transform2.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/transform2.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/vector_angle.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/vector_angle.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/wrap.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/wrap.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/scalar_multiplication.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/range.hpp \
+		include/Mesh.h \
+		include/Object.h \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_decompose.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_decompose.inl \
+		include/Walls.h \
+		include/Corner.h \
+		include/Roof.h \
+		/usr/local/include/gtest/gtest.h \
+		/usr/local/include/gtest/internal/gtest-internal.h \
+		/usr/local/include/gtest/internal/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-port-arch.h \
+		/usr/local/include/gtest/internal/custom/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-tuple.h \
+		/usr/local/include/gtest/gtest-message.h \
+		/usr/local/include/gtest/internal/gtest-string.h \
+		/usr/local/include/gtest/internal/gtest-filepath.h \
+		/usr/local/include/gtest/internal/gtest-type-util.h \
+		/usr/local/include/gtest/gtest-death-test.h \
+		/usr/local/include/gtest/internal/gtest-death-test-internal.h \
+		/usr/local/include/gtest/gtest-param-test.h \
+		/usr/local/include/gtest/internal/gtest-param-util.h \
+		/usr/local/include/gtest/internal/gtest-linked_ptr.h \
+		/usr/local/include/gtest/gtest-printers.h \
+		/usr/local/include/gtest/internal/custom/gtest-printers.h \
+		/usr/local/include/gtest/internal/gtest-param-util-generated.h \
+		/usr/local/include/gtest/gtest_prod.h \
+		/usr/local/include/gtest/gtest-test-part.h \
+		/usr/local/include/gtest/gtest-typed-test.h \
+		/usr/local/include/gtest/gtest_pred_impl.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/SameStyleBuilder.o src/SameStyleBuilder.cpp
+
 obj/Walls.o: src/Walls.cpp include/Walls.h \
 		include/Object.h \
 		include/Mesh.h \
@@ -2308,6 +2596,264 @@ obj/Walls.o: src/Walls.cpp include/Walls.h \
 		/Users/albertolascala/Building-Generator/glm/gtx/matrix_decompose.hpp \
 		/Users/albertolascala/Building-Generator/glm/gtx/matrix_decompose.inl
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Walls.o src/Walls.cpp
+
+obj/WindowsOnlyBuilder.o: src/WindowsOnlyBuilder.cpp include/WindowsOnlyBuilder.h \
+		include/Builder.h \
+		include/Building.h \
+		/Users/albertolascala/Building-Generator/glm/glm.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/_fixes.hpp \
+		/Users/albertolascala/Building-Generator/glm/fwd.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_int.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/setup.hpp \
+		/Users/albertolascala/Building-Generator/glm/simd/platform.h \
+		/Users/albertolascala/Building-Generator/glm/detail/type_float.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/precision.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat.hpp \
+		/Users/albertolascala/Building-Generator/glm/vec2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/_swizzle.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/_swizzle_func.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec2.inl \
+		/Users/albertolascala/Building-Generator/glm/vec3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec3.inl \
+		/Users/albertolascala/Building-Generator/glm/vec4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec4.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec4_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/mat2x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x2.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_matrix.hpp \
+		/Users/albertolascala/Building-Generator/glm/mat2x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x3.inl \
+		/Users/albertolascala/Building-Generator/glm/mat2x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat2x4.inl \
+		/Users/albertolascala/Building-Generator/glm/mat3x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x2.inl \
+		/Users/albertolascala/Building-Generator/glm/mat3x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x3.inl \
+		/Users/albertolascala/Building-Generator/glm/mat3x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat3x4.inl \
+		/Users/albertolascala/Building-Generator/glm/mat4x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x2.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x2.inl \
+		/Users/albertolascala/Building-Generator/glm/mat4x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x3.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x3.inl \
+		/Users/albertolascala/Building-Generator/glm/mat4x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x4.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x4.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/type_mat4x4_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_matrix.inl \
+		/Users/albertolascala/Building-Generator/glm/geometric.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_geometric.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_geometric.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_exponential.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec1.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_vec1.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_exponential.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_vector_relational.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_vector_relational.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_vector_relational_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/_vectorize.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_exponential_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/simd/exponential.h \
+		/Users/albertolascala/Building-Generator/glm/detail/func_common.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_common.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_common_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/simd/common.h \
+		/Users/albertolascala/Building-Generator/glm/detail/func_geometric_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/simd/geometric.h \
+		/Users/albertolascala/Building-Generator/glm/detail/func_matrix_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/simd/matrix.h \
+		/Users/albertolascala/Building-Generator/glm/trigonometric.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_trigonometric.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_trigonometric.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_trigonometric_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/exponential.hpp \
+		/Users/albertolascala/Building-Generator/glm/common.hpp \
+		/Users/albertolascala/Building-Generator/glm/packing.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_packing.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_packing.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/type_half.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/type_half.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_packing_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/matrix.hpp \
+		/Users/albertolascala/Building-Generator/glm/vector_relational.hpp \
+		/Users/albertolascala/Building-Generator/glm/integer.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_integer.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/func_integer.inl \
+		/Users/albertolascala/Building-Generator/glm/detail/func_integer_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/simd/integer.h \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_transform.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/constants.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/constants.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_transform.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/type_ptr.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/quaternion.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/quaternion.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/quaternion_simd.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/type_ptr.inl \
+		/Users/albertolascala/Building-Generator/glm/ext.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/bitfield.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/bitfield.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/color_space.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/color_space.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/epsilon.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/epsilon.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/functions.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/functions.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/integer.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/integer.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_access.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_access.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_integer.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_inverse.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/matrix_inverse.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/noise.hpp \
+		/Users/albertolascala/Building-Generator/glm/detail/_noise.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/noise.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/packing.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/type_precision.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/vec1.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/vec1.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/type_precision.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/packing.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/random.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/random.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/reciprocal.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/reciprocal.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/round.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/round.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/ulp.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtc/ulp.inl \
+		/Users/albertolascala/Building-Generator/glm/gtc/type_aligned.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/associated_min_max.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/associated_min_max.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/bit.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/bit.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/closest_point.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/closest_point.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/color_space.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/color_space_YCoCg.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/color_space_YCoCg.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/compatibility.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/compatibility.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/component_wise.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/component_wise.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/dual_quaternion.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/dual_quaternion.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/euler_angles.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/euler_angles.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/extend.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/extend.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/extended_min_max.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/extended_min_max.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_exponential.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_exponential.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_square_root.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_square_root.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_trigonometry.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/fast_trigonometry.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/gradient_paint.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/optimum_pow.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/optimum_pow.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/gradient_paint.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/handed_coordinate_space.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/handed_coordinate_space.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/integer.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/intersect.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/vector_query.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/vector_query.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/intersect.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/log_base.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/log_base.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_cross_product.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_cross_product.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_interpolation.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_interpolation.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_major_storage.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_major_storage.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_operation.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_operation.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_query.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_query.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/mixed_product.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/mixed_product.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/norm.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/quaternion.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/norm.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/normal.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/normal.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/normalize_dot.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/normalize_dot.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/number_precision.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/number_precision.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/orthonormalize.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/orthonormalize.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/perpendicular.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/projection.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/projection.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/perpendicular.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/polar_coordinates.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/polar_coordinates.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/raw_data.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/raw_data.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/rotate_vector.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/transform.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/transform.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/rotate_vector.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/spline.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/spline.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/std_based_type.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/std_based_type.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/string_cast.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/string_cast.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/transform2.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/transform2.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/vector_angle.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/vector_angle.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/wrap.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/wrap.inl \
+		/Users/albertolascala/Building-Generator/glm/gtx/scalar_multiplication.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/range.hpp \
+		include/Mesh.h \
+		include/Object.h \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_decompose.hpp \
+		/Users/albertolascala/Building-Generator/glm/gtx/matrix_decompose.inl \
+		include/Walls.h \
+		include/Corner.h \
+		include/Roof.h \
+		/usr/local/include/gtest/gtest.h \
+		/usr/local/include/gtest/internal/gtest-internal.h \
+		/usr/local/include/gtest/internal/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-port-arch.h \
+		/usr/local/include/gtest/internal/custom/gtest-port.h \
+		/usr/local/include/gtest/internal/gtest-tuple.h \
+		/usr/local/include/gtest/gtest-message.h \
+		/usr/local/include/gtest/internal/gtest-string.h \
+		/usr/local/include/gtest/internal/gtest-filepath.h \
+		/usr/local/include/gtest/internal/gtest-type-util.h \
+		/usr/local/include/gtest/gtest-death-test.h \
+		/usr/local/include/gtest/internal/gtest-death-test-internal.h \
+		/usr/local/include/gtest/gtest-param-test.h \
+		/usr/local/include/gtest/internal/gtest-param-util.h \
+		/usr/local/include/gtest/internal/gtest-linked_ptr.h \
+		/usr/local/include/gtest/gtest-printers.h \
+		/usr/local/include/gtest/internal/custom/gtest-printers.h \
+		/usr/local/include/gtest/internal/gtest-param-util-generated.h \
+		/usr/local/include/gtest/gtest_prod.h \
+		/usr/local/include/gtest/gtest-test-part.h \
+		/usr/local/include/gtest/gtest-typed-test.h \
+		/usr/local/include/gtest/gtest_pred_impl.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/WindowsOnlyBuilder.o src/WindowsOnlyBuilder.cpp
 
 ####### Install
 

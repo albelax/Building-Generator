@@ -37,6 +37,7 @@
 #include "TrackballCamera.h"
 #include "Builder.h"
 #include "MixBuilder.h"
+#include "WindowsOnlyBuilder.h"
 
 
 int main()
@@ -66,20 +67,20 @@ int main()
 	glViewport(0,0,width, height);
 	srandom(time(NULL));
 
-	MixBuilder builder = MixBuilder();
-	Building building = builder.getBuilding();
+	MixBuilder mixBuilder = MixBuilder((random()%3)+2);
+	Building mixBuilding = mixBuilder.getBuilding();
 
-	int bufferSize = building.amountVertices();
+	int bufferSize = mixBuilding.amountVertices();
 
 	Buffer buffer(bufferSize, sizeof(float)); // generate vbo buffer
-	building.setBufferIndex(buffer.append((void *) building.getVertices(), building.amountVertices(), Buffer::VERTEX));
+	mixBuilding.setBufferIndex(buffer.append((void *) mixBuilding.getVertices(), mixBuilding.amountVertices(), Buffer::VERTEX));
 
 	// pass the vertex data to the shader
 	GLint pos = glGetAttribLocation(test.getShaderProgram(), "VertexPosition");
 	glEnableVertexAttribArray(pos);
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	buffer.append((void *) building.getNormals(), building.amountVertices(), Buffer::NORMAL);
+	buffer.append((void *) mixBuilding.getNormals(), mixBuilding.amountVertices(), Buffer::NORMAL);
 
 	// pass the normals to the shader
 	GLint n = glGetAttribLocation(test.getShaderProgram(), "VertexNormal");
@@ -145,7 +146,7 @@ int main()
 				}
 				case SDLK_s:
 				{
-					Mesh::write(building.getVerticesContainer(), building.getNormalsContainer(), "out.obj");
+					Mesh::write(mixBuilding.getVerticesContainer(), mixBuilding.getNormalsContainer(), "out.obj");
 					break;
 				}
 				default:break;
@@ -156,12 +157,13 @@ int main()
 		glClearColor(0.36f,0.36f,0.36f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		MVP = projection * mainCamera.viewMatrix() * glm::mat4(1.0f);
-		N = glm::mat3(glm::inverse(glm::transpose(glm::mat4(1.0f))));
+		glm::mat4 MV = glm::mat4(1.0);
+		MVP = projection * mainCamera.viewMatrix() * MV;
+		N = glm::mat3(glm::inverse(glm::transpose(MV)));
 		glUniformMatrix4fv(MVP_address, 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+		glUniformMatrix4fv(MV_address, 1, GL_FALSE, glm::value_ptr(MV));
 		glUniformMatrix3fv(N_address, 1, GL_FALSE, glm::value_ptr(N));
-		glDrawArrays(GL_TRIANGLES, building.getBufferIndex()/3, building.amountVertices()/3);
+		glDrawArrays(GL_TRIANGLES, mixBuilding.getBufferIndex()/3, mixBuilding.amountVertices()/3);
 
 		SDL_GL_SwapWindow(mainWindow.getWindow());
 	}

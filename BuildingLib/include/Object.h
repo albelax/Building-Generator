@@ -30,6 +30,7 @@ public:
 	/// \brief getMVs returns a reference to the std::vector containing the transformation matrices
 	const std::vector<glm::mat4> & getMVs() { return m_MVs; }
 
+	virtual void clear();
 protected:
 	/// \brief m_rotationTable is a table containing all the rotations of an object can have
 	std::vector<std::vector<float>> m_rotationTable;

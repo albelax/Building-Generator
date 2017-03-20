@@ -18,13 +18,13 @@ Corner::Corner(Walls &_base)
 {
 	makeRotationTable();
 	makeTranslationTable();
-	m_MVs.resize(_base.getRule()->length());
+	m_MVs.resize( _base.getRule()->length() );
 	std::vector<glm::mat4>::iterator it = m_MVs.begin();
 	for (unsigned int i = 0; i < _base.getRule()->length(); ++i)
 	{
 		unsigned int column;
 		unsigned int row;
-		char next = i == _base.getRule()->length()-1 ? (*_base.getRule())[0] : (*_base.getRule())[i+1];
+		char next = i == _base.getRule()->length()-1 ? (*_base.getRule())[0] : ( *_base.getRule() )[i+1];
 		switch((*_base.getRule())[i])
 		{
 			case 'r': { column = 0; break; }
@@ -91,3 +91,9 @@ void Corner::makeTranslationTable()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+
+void Corner::clear()
+{
+	m_MVs.clear();
+}

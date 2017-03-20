@@ -179,22 +179,7 @@ std::vector<std::string> Mesh::split(std::string _stringIn, char _splitChar)
 
 void Mesh::write(std::string _destination)
 {
-	std::ofstream out;
-	out.open( _destination);
-	out.clear();
-	for(unsigned int i = 0; i < m_vertices.size(); i+=3)
-	{
-		out << "v " << m_vertices[i] << " " << m_vertices[i+1] << " " << m_vertices[i+2] << "\n";
-	}
-	for(unsigned int i = 0; i < m_normals.size(); i+=3)
-	{
-		out << "vn " << m_normals[i] << " " << m_normals[i+1] << " " << m_normals[i+2] << "\n";
-	}
-
-	for(unsigned int i = 0; i < m_vertices.size()/9; ++i)
-	{
-		out << "f " << (i*3)+1 << "//"<< (i*3)+1 << " " << (i*3)+2 << "//" << (i*3)+2 << " " << (i*3)+3 << "//" << (i*3)+3 << "\n";
-	}
+	Mesh::write(m_vertices, m_normals, _destination);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -7,6 +7,7 @@ MixBuilder::MixBuilder(int _height) : Builder(_height)
 	m_building.addWindows();
 	m_building.addRoof();
 	m_building.addFront();
+	m_building.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

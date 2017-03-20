@@ -17,9 +17,7 @@ HEADERS+=$$PWD/include/*
 
 macx:QMAKE_CXXFLAGS += -arch x86_64
 QMAKE_CXXFLAGS += -msse -msse2 -msse3
-QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
 
-LIBS += $$system(sdl2-config --libs)
 LIBS += -L/usr/local/lib -lgtest -lpthread
 
 INCLUDEPATH += include

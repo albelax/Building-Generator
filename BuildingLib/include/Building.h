@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <dirent.h>
-#include <gtest/gtest.h>
+
 
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
@@ -18,7 +18,11 @@
 #include "Corner.h"
 #include "Roof.h"
 
-#define TESTING 1
+#define TESTING 0
+
+#if TESTING
+#include <gtest/gtest.h>
+#endif // TESTING
 
 /// \file Building.h
 /// \brief this is the class that makes a building, it contains all the components to make a building and all the functions needed
@@ -87,6 +91,7 @@ public:
 	/// \brief setMode is used by the user to decide whether the building should be generate using multiple folders or only one
 	void setMode(GenerationMode _mode) { m_mode = _mode; }
 
+	void clear() override;
 private:
 	/// \brief Floor dictates where each elements is attached to the building
 	enum Floor {ALL, BOTTOM, TOP, NOT_BOTTOM, ENTRANCE };

@@ -8,7 +8,11 @@
 #include "Corner.h"
 #include "Walls.h"
 
-#define TESTING 1
+#define TESTING 0
+
+#if TESTING
+#include <gtest/gtest.h>
+#endif // TESTING
 
 /// \file Roof.h
 /// \brief this is the class that makes The roof, it uses the matrices of the walls to fill the gap and make a roof

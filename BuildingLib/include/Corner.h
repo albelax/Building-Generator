@@ -35,6 +35,7 @@ public:
 	/// each index corresponds to a matrix, if it's 1 is an exception otherwise it isn't
 	std::vector<int> getExceptions() { return m_isException; }
 
+	void clear() override;
 private:
 
 	///

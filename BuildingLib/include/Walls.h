@@ -20,6 +20,7 @@ public:
 	/// \brief getRule returns a constant pointer to the rule that generated the walls
 	const std::string * getRule() const { return &m_rule; }
 
+	void clear() override;
 private:
 	/// \brief m_padding is the spacing to translate each wall etc
 	float m_padding;
